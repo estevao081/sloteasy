@@ -219,7 +219,7 @@
   font-weight: 700;
 }
 .slote-bottom-label { font-size: 5mm; letter-spacing: 1mm; }
-.slote-bottom-value { font-size: 9mm; font-weight: 900; }
+.slote-bottom-value { font-size: 14mm; font-weight: 900; }
 
 .cut-line {
   border-top: 1px dashed #888;
