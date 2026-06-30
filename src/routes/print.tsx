@@ -31,18 +31,23 @@ function PrintPage() {
   const [orientation, setOrientation] = useState<"portrait" | "landscape">("portrait");
   const [notFound, setNotFound] = useState(false);
 
-  function lookup(c: string) {
+  async function lookup(c: string) {
     const v = c.trim();
     if (!v) {
       setDescription("");
       setNotFound(false);
       return;
     }
-    const p = productService.getByCode(v);
-    if (p) {
-      setDescription(p.name);
-      setNotFound(false);
-    } else {
+    try {
+      const p = await productService.getByCode(v);
+      if (p) {
+        setDescription(p.name);
+        setNotFound(false);
+      } else {
+        setDescription("");
+        setNotFound(true);
+      }
+    } catch {
       setDescription("");
       setNotFound(true);
     }
@@ -52,6 +57,7 @@ function PrintPage() {
     const t = setTimeout(() => lookup(code), 400);
     return () => clearTimeout(t);
   }, [code]);
+
 
   const validityFmt = validity
     ? (() => {

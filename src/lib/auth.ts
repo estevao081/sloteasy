@@ -1,62 +1,63 @@
-export interface User {
-  id: number;
-  name: string;
+import { api, getToken, setToken } from "./api";
+
+export interface SessionUser {
   email: string;
-  password: string;
+  name?: string;
 }
 
-const USERS_KEY = "slotes:users";
 const SESSION_KEY = "slotes:session";
 
-function read<T>(key: string, fallback: T): T {
-  if (typeof window === "undefined") return fallback;
+function readSession(): SessionUser | null {
+  if (typeof window === "undefined") return null;
   try {
-    const raw = localStorage.getItem(key);
-    return raw ? (JSON.parse(raw) as T) : fallback;
+    const raw = localStorage.getItem(SESSION_KEY);
+    return raw ? (JSON.parse(raw) as SessionUser) : null;
   } catch {
-    return fallback;
+    return null;
   }
 }
 
-function write(key: string, value: unknown) {
+function writeSession(s: SessionUser | null) {
   if (typeof window === "undefined") return;
-  localStorage.setItem(key, JSON.stringify(value));
+  if (s) localStorage.setItem(SESSION_KEY, JSON.stringify(s));
+  else localStorage.removeItem(SESSION_KEY);
+}
+
+interface LoginResponse {
+  token: string;
 }
 
 export const authService = {
-  getUsers(): User[] {
-    return read<User[]>(USERS_KEY, []);
-  },
-  getSession(): Omit<User, "password"> | null {
-    return read<Omit<User, "password"> | null>(SESSION_KEY, null);
+  getSession(): SessionUser | null {
+    return readSession();
   },
   isAuthenticated(): boolean {
-    return this.getSession() !== null;
+    return !!getToken();
   },
-  login(email: string, password: string): Omit<User, "password"> {
-    const users = this.getUsers();
-    const found = users.find(
-      (u) => u.email.toLowerCase() === email.toLowerCase() && u.password === password,
-    );
-    if (!found) throw new Error("E-mail ou senha inválidos");
-    const session = { id: found.id, name: found.name, email: found.email };
-    write(SESSION_KEY, session);
+  async login(email: string, password: string): Promise<SessionUser> {
+    const res = await api<LoginResponse>("/auth/login", {
+      method: "POST",
+      auth: false,
+      body: JSON.stringify({ email, password }),
+    });
+    setToken(res.token);
+    const session: SessionUser = { email };
+    writeSession(session);
     return session;
   },
-  register(name: string, email: string, password: string): Omit<User, "password"> {
-    const users = this.getUsers();
-    if (users.some((u) => u.email.toLowerCase() === email.toLowerCase())) {
-      throw new Error("E-mail já cadastrado");
-    }
-    const user: User = { id: Date.now(), name, email, password };
-    users.push(user);
-    write(USERS_KEY, users);
-    const session = { id: user.id, name: user.name, email: user.email };
-    write(SESSION_KEY, session);
+  async register(name: string, email: string, password: string): Promise<SessionUser> {
+    const res = await api<LoginResponse>("/auth/register", {
+      method: "POST",
+      auth: false,
+      body: JSON.stringify({ name, email, password }),
+    });
+    setToken(res.token);
+    const session: SessionUser = { email, name };
+    writeSession(session);
     return session;
   },
   logout() {
-    if (typeof window === "undefined") return;
-    localStorage.removeItem(SESSION_KEY);
+    setToken(null);
+    writeSession(null);
   },
 };

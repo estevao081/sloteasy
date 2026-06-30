@@ -19,7 +19,7 @@ function RegisterPage() {
   const [confirm, setConfirm] = useState("");
   const [error, setError] = useState<string | null>(null);
 
-  function onSubmit(e: React.FormEvent) {
+  async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
     if (password !== confirm) {
@@ -27,12 +27,13 @@ function RegisterPage() {
       return;
     }
     try {
-      authService.register(name, email, password);
+      await authService.register(name, email, password);
       navigate({ to: "/dashboard" });
     } catch (err) {
       setError((err as Error).message);
     }
   }
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-muted/30 px-4">
