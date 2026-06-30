@@ -11,3 +11,8 @@
     Access-Control-Allow-Credentials = "true"
     Access-Control-Allow-Origin = "*"
     Access-Control-Allow-Headers = "Content-Type, Authorization"
+
+# netlify.toml
+[build]
+  command = "bun run build"
+  publish = "dist"
