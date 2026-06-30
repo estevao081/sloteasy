@@ -22,16 +22,17 @@ function LoginPage() {
     if (authService.isAuthenticated()) navigate({ to: "/dashboard" });
   }, [navigate]);
 
-  function onSubmit(e: React.FormEvent) {
+  async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
     try {
-      authService.login(email, password);
+      await authService.login(email, password);
       navigate({ to: "/dashboard" });
     } catch (err) {
       setError((err as Error).message);
     }
   }
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-muted/30 px-4">

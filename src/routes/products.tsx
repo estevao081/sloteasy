@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AppShell } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,12 +22,28 @@ export const Route = createFileRoute("/products")({
 });
 
 function ProductsPage() {
-  const [items, setItems] = useState<Product[]>(() => productService.list());
+  const [items, setItems] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
   const [code, setCode] = useState("");
   const [name, setName] = useState("");
-  const [editing, setEditing] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<number | null>(null);
   const [search, setSearch] = useState("");
   const [error, setError] = useState<string | null>(null);
+
+  async function refresh() {
+    setLoading(true);
+    try {
+      setItems(await productService.list());
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    refresh();
+  }, []);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -40,20 +56,20 @@ function ProductsPage() {
   function reset() {
     setCode("");
     setName("");
-    setEditing(null);
+    setEditingId(null);
     setError(null);
   }
 
-  function onSubmit(e: React.FormEvent) {
+  async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
     try {
-      if (editing) {
-        productService.update(editing, { code, name });
+      if (editingId != null) {
+        await productService.update(editingId, { code, name });
       } else {
-        productService.create({ code, name });
+        await productService.create({ code, name });
       }
-      setItems(productService.list());
+      await refresh();
       reset();
     } catch (err) {
       setError((err as Error).message);
@@ -61,15 +77,21 @@ function ProductsPage() {
   }
 
   function onEdit(p: Product) {
-    setEditing(p.code);
+    if (p.id == null) return;
+    setEditingId(p.id);
     setCode(p.code);
     setName(p.name);
   }
 
-  function onDelete(p: Product) {
+  async function onDelete(p: Product) {
+    if (p.id == null) return;
     if (!confirm(`Excluir produto ${p.code}?`)) return;
-    productService.remove(p.code);
-    setItems(productService.list());
+    try {
+      await productService.remove(p.id);
+      await refresh();
+    } catch (err) {
+      setError((err as Error).message);
+    }
   }
 
   return (
@@ -84,7 +106,6 @@ function ProductsPage() {
                   id="code"
                   required
                   value={code}
-                  disabled={!!editing}
                   onChange={(e) => setCode(e.target.value)}
                 />
               </div>
@@ -93,8 +114,8 @@ function ProductsPage() {
                 <Input id="name" required value={name} onChange={(e) => setName(e.target.value)} />
               </div>
               <div className="flex gap-2">
-                <Button type="submit">{editing ? "Salvar" : "Cadastrar Produto"}</Button>
-                {editing && (
+                <Button type="submit">{editingId != null ? "Salvar" : "Cadastrar Produto"}</Button>
+                {editingId != null && (
                   <Button type="button" variant="outline" onClick={reset}>
                     Cancelar
                   </Button>
@@ -125,27 +146,35 @@ function ProductsPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filtered.length === 0 && (
+                {loading && (
+                  <TableRow>
+                    <TableCell colSpan={3} className="text-center text-muted-foreground py-8">
+                      Carregando...
+                    </TableCell>
+                  </TableRow>
+                )}
+                {!loading && filtered.length === 0 && (
                   <TableRow>
                     <TableCell colSpan={3} className="text-center text-muted-foreground py-8">
                       Nenhum produto encontrado
                     </TableCell>
                   </TableRow>
                 )}
-                {filtered.map((p) => (
-                  <TableRow key={p.code}>
-                    <TableCell className="font-mono">{p.code}</TableCell>
-                    <TableCell>{p.name}</TableCell>
-                    <TableCell className="text-right">
-                      <Button size="icon" variant="ghost" onClick={() => onEdit(p)}>
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-                      <Button size="icon" variant="ghost" onClick={() => onDelete(p)}>
-                        <Trash2 className="h-4 w-4 text-destructive" />
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {!loading &&
+                  filtered.map((p) => (
+                    <TableRow key={p.id ?? p.code}>
+                      <TableCell className="font-mono">{p.code}</TableCell>
+                      <TableCell>{p.name}</TableCell>
+                      <TableCell className="text-right">
+                        <Button size="icon" variant="ghost" onClick={() => onEdit(p)}>
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                        <Button size="icon" variant="ghost" onClick={() => onDelete(p)}>
+                          <Trash2 className="h-4 w-4 text-destructive" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
               </TableBody>
             </Table>
           </CardContent>
