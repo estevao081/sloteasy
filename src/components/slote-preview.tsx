@@ -11,15 +11,9 @@ export function Slote({ data, orientation }: { data: SloteData; orientation: "po
   return (
     <div className={`slote ${isLandscape ? "slote-landscape" : "slote-portrait"}`}>
       <div className="slote-top">
-        <div className="slote-row">
-          <div className="slote-field">
-            <span className="slote-label">FILIAL</span>
-            <span className="slote-value">{data.branch || "_________"}</span>
-          </div>
-          <div className="slote-field">
-            <span className="slote-label">DATA</span>
-            <span className="slote-value">{data.date}</span>
-          </div>
+        <div className="slote-field">
+          <span className="slote-label">DATA</span>
+          <span className="slote-value">{data.date}</span>
         </div>
         <div className="slote-field">
           <span className="slote-label">CÓDIGO</span>
