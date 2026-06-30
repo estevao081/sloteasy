@@ -205,8 +205,8 @@
   min-height: 8mm;
 }
 .slote-qty-wrap { flex: 0 0 55%; }
-.slote-qty { font-size: 22mm; font-weight: 900; line-height: 1; }
-.slote-landscape .slote-qty { font-size: 32mm; }
+.slote-qty { font-size: 16mm; font-weight: 900; line-height: 1; }
+.slote-landscape .slote-qty { font-size: 22mm; }
 .slote-sign-line { border-bottom: 0.5mm solid #000; height: 12mm; }
 
 .slote-bottom {
@@ -219,7 +219,7 @@
   font-weight: 700;
 }
 .slote-bottom-label { font-size: 5mm; letter-spacing: 1mm; }
-.slote-bottom-value { font-size: 9mm; font-weight: 900; }
+.slote-bottom-value { font-size: 14mm; font-weight: 900; }
 
 .cut-line {
   border-top: 1px dashed #888;
