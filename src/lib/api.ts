@@ -1,7 +1,7 @@
 const TOKEN_KEY = "slotes:token";
 
 export const API_BASE_URL =
-  (import.meta.env.VITE_API_URL as string | undefined) ?? "http://localhost:8080";
+  (import.meta.env.VITE_API_URL as string | undefined) ?? "https://sloteasy-api.onrender.com";
 
 export function getToken(): string | null {
   if (typeof window === "undefined") return null;
