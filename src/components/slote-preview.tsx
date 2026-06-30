@@ -4,7 +4,6 @@ interface SloteData {
   quantity: string;
   validity: string; // dd/MM/yy
   date: string; // dd/MM/yy
-  branch?: string;
 }
 
 export function Slote({ data, orientation }: { data: SloteData; orientation: "portrait" | "landscape" }) {
