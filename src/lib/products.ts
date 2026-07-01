@@ -6,9 +6,17 @@ export interface Product {
   name: string;
 }
 
+export interface PageResponse<T> {
+  content: T[];
+  totalElements: number;
+  totalPages: number;
+  size: number;
+  number: number;
+}
+
 export const productService = {
-  list(): Promise<Product[]> {
-    return api<Product[]>("/products");
+  list(page: number = 0, size: number = 15): Promise<PageResponse<Product>> {
+    return api<PageResponse<Product>>(`/products?page=${page}&item=${size}`);
   },
   getByCode(code: string): Promise<Product | null> {
     return api<Product>(`/products/code/${encodeURIComponent(code)}`).catch(() => null);

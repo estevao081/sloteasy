@@ -13,7 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Pencil, Trash2, Search } from "lucide-react";
+import { Pencil, Trash2, Search, ChevronLeft, ChevronRight } from "lucide-react";
 import { productService, type Product } from "@/lib/products";
 
 export const Route = createFileRoute("/products")({
@@ -29,13 +29,25 @@ function ProductsPage() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [search, setSearch] = useState("");
   const [error, setError] = useState<string | null>(null);
+  
+  // Paginação
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalElements, setTotalElements] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const itemsPerPage = 15;
 
   async function refresh() {
     setLoading(true);
     try {
-      setItems(await productService.list());
+      const response = await productService.list(currentPage, itemsPerPage);
+      setItems(response.content || []);
+      setTotalElements(response.totalElements || 0);
+      setTotalPages(response.totalPages || 0);
     } catch (err) {
       setError((err as Error).message);
+      setItems([]);
+      setTotalElements(0);
+      setTotalPages(0);
     } finally {
       setLoading(false);
     }
@@ -43,12 +55,12 @@ function ProductsPage() {
 
   useEffect(() => {
     refresh();
-  }, []);
+  }, [currentPage]);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
-    if (!q) return items;
-    return items.filter(
+    if (!q) return items || [];
+    return (items || []).filter(
       (p) => p.code.toLowerCase().includes(q) || p.name.toLowerCase().includes(q),
     );
   }, [items, search]);
@@ -177,6 +189,40 @@ function ProductsPage() {
                   ))}
               </TableBody>
             </Table>
+            
+            {/* Controles de Paginação */}
+            {!loading && totalElements > 0 && (
+              <div className="flex items-center justify-between pt-4 border-t">
+                <div className="text-sm text-muted-foreground">
+                  Mostrando {currentPage * itemsPerPage + 1} a {Math.min((currentPage + 1) * itemsPerPage, totalElements)} de {totalElements} produtos
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage(currentPage - 1)}
+                    disabled={currentPage === 0}
+                    data-testid="pagination-previous"
+                  >
+                    <ChevronLeft className="h-4 w-4 mr-1" />
+                    Anterior
+                  </Button>
+                  <div className="text-sm font-medium px-2">
+                    Página {currentPage + 1} de {totalPages}
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage(currentPage + 1)}
+                    disabled={currentPage >= totalPages - 1}
+                    data-testid="pagination-next"
+                  >
+                    Próxima
+                    <ChevronRight className="h-4 w-4 ml-1" />
+                  </Button>
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
