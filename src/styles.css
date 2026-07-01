@@ -311,6 +311,9 @@
   font-weight: 900;
   letter-spacing: 1px;
   border-right: 1px solid #000;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+  color-adjust: exact;
 }
 .slote-half .s-validade-value-container {
   flex: 1;
@@ -318,15 +321,19 @@
   align-items: center;
   justify-content: center;
   padding: 0;
+  height: 100%;
 }
 .slote-half .s-validade-value {
   font-size: 60pt;
   font-weight: 900;
   width: 100%;
+  height: 100%;
   text-align: center;
   display: flex;
   align-items: center;
   justify-content: center;
+  line-height: 1;
+  letter-spacing: 1px;
 }
 .slote-half .s-barcode {
   background: #111;
@@ -464,6 +471,9 @@
   font-weight: 900;
   letter-spacing: 2px;
   border-right: 1px solid #000;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+  color-adjust: exact;
 }
 .slote-full .s-validade-value-container {
   flex: 1;
@@ -471,15 +481,19 @@
   align-items: center;
   justify-content: center;
   padding: 0;
+  height: 100%;
 }
 .slote-full .s-validade-value {
   font-size: 92pt;
   font-weight: 900;
   width: 100%;
+  height: 100%;
   text-align: center;
   display: flex;
   align-items: center;
   justify-content: center;
+  line-height: 1;
+  letter-spacing: 1px;
 }
 .slote-full .s-barcode {
   background: #111;
@@ -550,8 +564,18 @@
 }
 .s-val-input {
   color: #000;
-  font-weight: 900;
+  font-weight: 900 !important;
   text-align: center;
+}
+.slote-half .s-val-input {
+  font-size: 60pt !important;
+  line-height: 1 !important;
+  letter-spacing: 1px !important;
+}
+.slote-full .s-val-input {
+  font-size: 92pt !important;
+  line-height: 1 !important;
+  letter-spacing: 1px !important;
 }
 .s-barcode-hint {
   position: absolute;
@@ -604,6 +628,14 @@
     margin: 0 !important;
     padding: 0 !important;
     page-break-after: avoid !important;
+  }
+  /* Força impressão do background cinza da validade */
+  .s-validade-label {
+    background: #4d4d4d !important;
+    color: #fff !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
   }
 }
 @page landscape-page { size: A4 landscape; margin: 0; }
