@@ -257,6 +257,58 @@
   .print-landscape .print-sheet { transform: scale(0.45); margin-bottom: -115mm; }
 }
 
+/* ==== inline editable inputs ==== */
+.s-input {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: transparent;
+  text-align: center;
+  font: inherit;
+  color: inherit;
+  padding: 0;
+  outline: none;
+  text-transform: inherit;
+  letter-spacing: inherit;
+  line-height: inherit;
+  font-weight: inherit;
+}
+.slote-editable .s-input {
+  background: rgba(255, 235, 130, 0.18);
+  transition: background 0.15s;
+}
+.slote-editable .s-input:hover { background: rgba(255, 235, 130, 0.35); }
+.slote-editable .s-input:focus { background: rgba(255, 235, 130, 0.55); }
+.s-code-input { text-align: center; }
+.s-desc-input { text-transform: uppercase; }
+.s-validade-edit { position: relative; padding: 0 !important; }
+.s-val-input {
+  color: #000;
+  font-weight: 900;
+  text-align: center;
+}
+.s-barcode-hint {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: #111;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.15;
+}
+.s-barcode-hint > div {
+  height: 60%; width: 80%;
+  background: repeating-linear-gradient(90deg,#fff 0,#fff 2.5mm,#000 2.5mm,#000 4mm);
+}
+.s-notfound {
+  position: absolute;
+  font-size: 8pt;
+  color: #b00020;
+  font-weight: 700;
+  margin-top: -2mm;
+}
+
 /* ============ PRINT ============ */
 @media print {
   @page { size: A4 portrait; margin: 0; }
@@ -273,6 +325,13 @@
   .print-portrait .print-sheet { width: 210mm !important; height: 297mm !important; }
   .print-landscape .print-sheet { width: 297mm !important; height: 210mm !important; }
   .print-landscape { page: landscape-page; }
+  .slote-editable .s-input { background: transparent !important; }
+  .s-notfound { display: none !important; }
+  .s-barcode-hint { opacity: 1 !important; }
+  .s-val-input::-webkit-calendar-picker-indicator { display: none !important; }
+  input[type="date"].s-val-input {
+    -webkit-appearance: none; appearance: none;
+  }
 }
 @page landscape-page { size: A4 landscape; margin: 0; }
 
