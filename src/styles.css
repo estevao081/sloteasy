@@ -202,6 +202,7 @@
   font-size: 14pt;
   font-weight: 700;
   border-right: 1px solid #000;
+  text-transform: uppercase;
 }
 .slote-half .s-date-label {
   width: 22mm;
@@ -319,9 +320,13 @@
   padding: 0;
 }
 .slote-half .s-validade-value {
-  font-size: 32pt;
+  font-size: 60pt;
   font-weight: 900;
   width: 100%;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .slote-half .s-barcode {
   background: #111;
@@ -350,6 +355,7 @@
   font-size: 22pt;
   font-weight: 700;
   border-right: 1px solid #000;
+  text-transform: uppercase;
 }
 .slote-full .s-date-label {
   width: 32mm;
@@ -467,9 +473,13 @@
   padding: 0;
 }
 .slote-full .s-validade-value {
-  font-size: 44pt;
+  font-size: 92pt;
   font-weight: 900;
   width: 100%;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .slote-full .s-barcode {
   background: #111;
@@ -528,6 +538,7 @@
 .slote-editable .s-input:focus { background: rgba(255, 235, 130, 0.55); }
 .s-code-input { text-align: center; }
 .s-desc-input { text-transform: uppercase; }
+.s-name .s-input { text-transform: uppercase; }
 .s-validade-edit { 
   position: relative; 
   padding: 0 !important;
