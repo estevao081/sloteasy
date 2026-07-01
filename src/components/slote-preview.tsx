@@ -2,42 +2,66 @@ interface SloteData {
   code: string;
   description: string;
   quantity: string;
-  validity: string; // dd/MM/yy
-  date: string; // dd/MM/yy
+  validity: string; // dd/MM/yyyy or empty
+  date: string; // dd/MM/yyyy
+  responsibleName: string;
 }
 
-export function Slote({ data, orientation }: { data: SloteData; orientation: "portrait" | "landscape" }) {
-  const isLandscape = orientation === "landscape";
+export function Slote({
+  data,
+  orientation,
+}: {
+  data: SloteData;
+  orientation: "portrait" | "landscape";
+}) {
+  const sizeClass = orientation === "landscape" ? "slote-full" : "slote-half";
   return (
-    <div className={`slote ${isLandscape ? "slote-landscape" : "slote-portrait"}`}>
-      <div className="slote-top">
-        <div className="slote-field">
-          <span className="slote-label">DATA</span>
-          <span className="slote-value">{data.date}</span>
-        </div>
-        <div className="slote-field">
-          <span className="slote-label">CÓDIGO</span>
-          <span className="slote-code">{data.code || "------"}</span>
-        </div>
-        <div className="slote-field">
-          <span className="slote-label">DESCRIÇÃO</span>
-          <span className="slote-desc">{data.description || "—"}</span>
-        </div>
-        <div className="slote-row">
-          <div className="slote-field slote-qty-wrap">
-            <span className="slote-label">QUANTIDADE</span>
-            <span className="slote-qty">{data.quantity || "0"}</span>
-          </div>
-          <div className="slote-field slote-sign">
-            <span className="slote-label">ASSINATURA</span>
-            <span className="slote-sign-line">&nbsp;</span>
-          </div>
-        </div>
-      </div>
-      <div className="slote-bottom">
-        <span className="slote-bottom-label">VALIDADE</span>
-        <span className="slote-bottom-value">{data.validity || "__/__/__"}</span>
-      </div>
+    <div className={`slote ${sizeClass}`}>
+      <table className="slote-table">
+        <tbody>
+          <tr>
+            <td className="s-name">{data.responsibleName || "\u00A0"}</td>
+            <td className="s-date-label">DATA</td>
+            <td className="s-date">{data.date}</td>
+          </tr>
+          <tr>
+            <td className="s-signature">
+              <span className="s-sigline" />
+              <span className="s-sigcaption">
+                Assinatura do responsável pela criação do Slote
+              </span>
+            </td>
+            <td colSpan={2} className="s-signature">
+              <span className="s-sigline" />
+              <span className="s-sigcaption">
+                Nome e assinatura do responsável por guardar o palete
+              </span>
+            </td>
+          </tr>
+          <tr>
+            <td colSpan={3} className="s-blank">&nbsp;</td>
+          </tr>
+          <tr>
+            <td colSpan={3} className="s-code">{data.code || "------"}</td>
+          </tr>
+          <tr>
+            <td className="s-header">DESCRIÇÃO</td>
+            <td colSpan={2} className="s-header">QTD</td>
+          </tr>
+          <tr>
+            <td className="s-description">{data.description || "\u00A0"}</td>
+            <td colSpan={2} className="s-qty">{data.quantity || "0"}</td>
+          </tr>
+          <tr className="s-footer-row">
+            <td className="s-validade-label">VALIDADE</td>
+            {data.validity ? (
+              <td colSpan={2} className="s-validade-value">{data.validity}</td>
+            ) : (
+              <td colSpan={2} className="s-barcode"><div /></td>
+            )}
+          </tr>
+        </tbody>
+      </table>
     </div>
   );
 }

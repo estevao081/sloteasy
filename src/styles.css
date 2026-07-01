@@ -145,95 +145,116 @@
 }
 
 /* ============ SLOTE ============ */
+.print-scale {
+  display: flex;
+  justify-content: center;
+  overflow: auto;
+}
 .print-sheet {
   background: #fff;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 4mm;
-  padding: 8mm;
-  border: 1px dashed var(--color-border);
-}
-.print-portrait .print-sheet { width: 210mm; min-height: 297mm; }
-.print-landscape .print-sheet { width: 297mm; min-height: 210mm; }
-
-.slote {
-  font-family: Arial, Helvetica, sans-serif;
-  color: #000;
-  background: #fff;
-  border: 2.5mm solid #000;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
-  overflow: hidden;
+  border: 1px dashed var(--color-border);
+  color: #000;
 }
-.slote-portrait { width: 100%; height: 138mm; }
-.slote-landscape { width: 100%; height: 194mm; }
-
-.slote-top {
-  flex: 1;
-  padding: 4mm 6mm;
-  display: flex;
-  flex-direction: column;
+.print-portrait .print-sheet {
+  width: 210mm;
+  height: 297mm;
+  padding: 5mm;
   gap: 3mm;
 }
-.slote-row { display: flex; gap: 6mm; }
-.slote-field { display: flex; flex-direction: column; flex: 1; }
-.slote-label {
-  font-size: 3mm;
-  font-weight: 700;
-  letter-spacing: 0.5mm;
-  border-bottom: 0.4mm solid #000;
-  padding-bottom: 0.5mm;
-  margin-bottom: 1mm;
+.print-landscape .print-sheet {
+  width: 297mm;
+  height: 210mm;
+  padding: 6mm;
 }
-.slote-value { font-size: 5mm; font-weight: 600; min-height: 7mm; }
-.slote-code {
-  font-size: 28mm;
-  font-weight: 900;
-  text-align: center;
-  line-height: 1;
-  letter-spacing: 1mm;
-  margin: 2mm 0;
-}
-.slote-landscape .slote-code { font-size: 42mm; }
-.slote-desc {
-  font-size: 5.5mm;
-  font-weight: 700;
-  text-align: center;
-  text-transform: uppercase;
-  min-height: 8mm;
-}
-.slote-qty-wrap { flex: 0 0 55%; }
-.slote-qty { font-size: 16mm; font-weight: 900; line-height: 1; }
-.slote-landscape .slote-qty { font-size: 22mm; }
-.slote-sign-line { border-bottom: 0.5mm solid #000; height: 12mm; }
 
-.slote-bottom {
-  background: #000;
-  color: #fff;
-  padding: 3mm 6mm;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-weight: 700;
-}
-.slote-bottom-label { font-size: 5mm; letter-spacing: 1mm; }
-.slote-bottom-value { font-size: 14mm; font-weight: 900; }
+.slote { width: 100%; }
+.slote-half { height: 142mm; }
+.slote-full { height: 198mm; }
 
-.cut-line {
-  border-top: 1px dashed #888;
-  text-align: center;
-  font-size: 10px;
-  color: #888;
-  margin: 2mm 0;
-  position: relative;
+.slote-table {
+  width: 100%;
+  height: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-family: Arial, Helvetica, sans-serif;
+  color: #000;
 }
-.cut-line span {
-  background: #fff;
-  padding: 0 6px;
-  position: relative;
-  top: -7px;
+.slote-table td {
+  border: 1px solid #000;
+  text-align: center;
+  vertical-align: middle;
+  padding: 0 2mm;
+}
+
+/* ==== half (2 per A4 portrait) ==== */
+.slote-half .s-name { height: 10mm; font-size: 14pt; font-weight: 700; }
+.slote-half .s-date-label { width: 22mm; font-size: 10pt; font-weight: 700; }
+.slote-half .s-date { width: 32mm; font-size: 10pt; font-weight: 700; }
+.slote-half .s-signature { height: 14mm; vertical-align: bottom; padding-bottom: 1mm; }
+.slote-half .s-sigline {
+  display: block; border-top: 1px solid #000; margin: 0 4mm 1mm;
+}
+.slote-half .s-sigcaption { font-size: 7pt; }
+.slote-half .s-blank { height: 5mm; border-left: none; border-right: none; }
+.slote-half .s-code { height: 45mm; font-size: 60pt; font-weight: 900; letter-spacing: 2px; line-height: 1; }
+.slote-half .s-header { height: 8mm; font-size: 12pt; font-weight: 700; }
+.slote-half .s-description { height: 32mm; font-size: 20pt; font-weight: 900; line-height: 1.1; text-transform: uppercase; }
+.slote-half .s-qty { width: 55mm; font-size: 56pt; font-weight: 900; line-height: 1; }
+.slote-half .s-footer-row { height: 26mm; }
+.slote-half .s-validade-label {
+  width: 45mm; background: #4d4d4d; color: #fff;
+  font-size: 16pt; font-weight: 900; letter-spacing: 1px;
+}
+.slote-half .s-validade-value { font-size: 24pt; font-weight: 900; }
+.slote-half .s-barcode { background: #111; padding: 0; }
+.slote-half .s-barcode > div {
+  height: 12mm; width: 80%; margin: auto;
+  background: repeating-linear-gradient(90deg,#fff 0,#fff 2.5mm,#000 2.5mm,#000 4mm);
+}
+
+/* ==== full (1 per A4 landscape) ==== */
+.slote-full .s-name { height: 14mm; font-size: 22pt; font-weight: 700; }
+.slote-full .s-date-label { width: 32mm; font-size: 14pt; font-weight: 700; }
+.slote-full .s-date { width: 45mm; font-size: 14pt; font-weight: 700; }
+.slote-full .s-signature { height: 18mm; vertical-align: bottom; padding-bottom: 1.5mm; }
+.slote-full .s-sigline { display: block; border-top: 1px solid #000; margin: 0 6mm 1.5mm; }
+.slote-full .s-sigcaption { font-size: 10pt; }
+.slote-full .s-blank { height: 8mm; border-left: none; border-right: none; }
+.slote-full .s-code { height: 60mm; font-size: 92pt; font-weight: 900; letter-spacing: 3px; line-height: 1; }
+.slote-full .s-header { height: 10mm; font-size: 18pt; font-weight: 700; }
+.slote-full .s-description { height: 42mm; font-size: 32pt; font-weight: 900; line-height: 1.1; text-transform: uppercase; }
+.slote-full .s-qty { width: 80mm; font-size: 88pt; font-weight: 900; line-height: 1; }
+.slote-full .s-footer-row { height: 36mm; }
+.slote-full .s-validade-label {
+  width: 70mm; background: #4d4d4d; color: #fff;
+  font-size: 22pt; font-weight: 900; letter-spacing: 2px;
+}
+.slote-full .s-validade-value { font-size: 34pt; font-weight: 900; }
+.slote-full .s-barcode { background: #111; padding: 0; }
+.slote-full .s-barcode > div {
+  height: 18mm; width: 80%; margin: auto;
+  background: repeating-linear-gradient(90deg,#fff 0,#fff 3.5mm,#000 3.5mm,#000 5.5mm);
+}
+
+/* ==== screen responsiveness (14"-19" displays) ==== */
+.print-sheet { transform-origin: top center; }
+@media screen and (max-width: 1700px) {
+  .print-landscape .print-sheet { transform: scale(0.75); margin-bottom: -55mm; }
+}
+@media screen and (max-width: 1500px) {
+  .print-portrait .print-sheet { transform: scale(0.85); margin-bottom: -45mm; }
+  .print-landscape .print-sheet { transform: scale(0.65); margin-bottom: -75mm; }
+}
+@media screen and (max-width: 1280px) {
+  .print-portrait .print-sheet { transform: scale(0.7); margin-bottom: -90mm; }
+  .print-landscape .print-sheet { transform: scale(0.55); margin-bottom: -95mm; }
+}
+@media screen and (max-width: 1024px) {
+  .print-portrait .print-sheet { transform: scale(0.55); margin-bottom: -135mm; }
+  .print-landscape .print-sheet { transform: scale(0.45); margin-bottom: -115mm; }
 }
 
 /* ============ PRINT ============ */
@@ -242,21 +263,16 @@
   body { background: #fff !important; }
   .no-print, .no-print * { display: none !important; }
   .preview-area > h2 { display: none !important; }
+  .print-scale { overflow: visible !important; display: block !important; }
   .print-sheet {
     border: 0 !important;
-    padding: 6mm !important;
     margin: 0 !important;
-    width: 210mm !important;
-    min-height: 297mm !important;
+    transform: none !important;
+    box-shadow: none !important;
   }
-  .print-landscape .print-sheet {
-    width: 297mm !important;
-    min-height: 210mm !important;
-  }
-  .cut-line { border-top: 1px dashed #000 !important; }
-  .cut-line span { color: #000 !important; }
-}
-@media print {
+  .print-portrait .print-sheet { width: 210mm !important; height: 297mm !important; }
+  .print-landscape .print-sheet { width: 297mm !important; height: 210mm !important; }
   .print-landscape { page: landscape-page; }
 }
 @page landscape-page { size: A4 landscape; margin: 0; }
+
