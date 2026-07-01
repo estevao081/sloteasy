@@ -49,118 +49,119 @@ export function Slote({
 
   return (
     <div className={`slote ${sizeClass}${editable ? " slote-editable" : ""}`}>
-      <table className="slote-table">
-        <tbody>
-          <tr>
-            <td className="s-name">
-              {editable ? (
-                <input
-                  className={"s-input" + editClass}
-                  value={data.responsibleName}
-                  placeholder="Seu nome"
-                  onChange={(e) => onChange?.({ responsibleName: e.target.value })}
-                />
-              ) : (
-                data.responsibleName || "\u00A0"
+      {/* Cabeçalho: Nome, Data Label, Data */}
+      <div className="s-header-row">
+        <div className="s-name">
+          {editable ? (
+            <input
+              className={"s-input" + editClass}
+              value={data.responsibleName}
+              placeholder="Seu nome"
+              onChange={(e) => onChange?.({ responsibleName: e.target.value })}
+            />
+          ) : (
+            data.responsibleName || "\u00A0"
+          )}
+        </div>
+        <div className="s-date-label">DATA</div>
+        <div className="s-date">{data.date}</div>
+      </div>
+
+      {/* Linha de assinaturas */}
+      <div className="s-signature-row">
+        <div className="s-signature">
+          <span className="s-sigcaption">Assinatura</span>
+        </div>
+        <div className="s-signature s-signature-right">
+          <span className="s-sigcaption">Nome do empilhador</span>
+        </div>
+      </div>
+
+      {/* Espaço em branco */}
+      <div className="s-blank">&nbsp;</div>
+
+      {/* Código */}
+      <div className="s-code-container">
+        {editable ? (
+          <input
+            ref={codeRef}
+            className={"s-input s-code-input" + editClass}
+            value={data.code}
+            placeholder="CÓDIGO"
+            onChange={(e) => onChange?.({ code: e.target.value })}
+          />
+        ) : (
+          data.code || "------"
+        )}
+        {editable && notFound && (
+          <div className="s-notfound">Produto não encontrado</div>
+        )}
+      </div>
+
+      {/* Headers Descrição e Quantidade */}
+      <div className="s-headers-row">
+        <div className="s-header-desc">DESCRIÇÃO</div>
+        <div className="s-header-qty">QTD</div>
+      </div>
+
+      {/* Valores Descrição e Quantidade */}
+      <div className="s-values-row">
+        <div className="s-description">
+          {editable ? (
+            <input
+              className={"s-input s-desc-input" + editClass}
+              value={data.description}
+              placeholder="—"
+              readOnly
+            />
+          ) : (
+            data.description || "\u00A0"
+          )}
+        </div>
+        <div className="s-qty">
+          {editable ? (
+            <input
+              className={"s-input s-qty-input" + editClass}
+              value={data.quantity}
+              placeholder="0"
+              inputMode="numeric"
+              onChange={(e) =>
+                onChange?.({ quantity: e.target.value.replace(/[^0-9]/g, "") })
+              }
+            />
+          ) : (
+            data.quantity || "0"
+          )}
+        </div>
+      </div>
+
+      {/* Footer: Validade */}
+      <div className="s-footer-row">
+        <div className="s-validade-label">VALIDADE</div>
+        <div className="s-validade-value-container">
+          {editable ? (
+            <div className="s-validade-edit">
+              <input
+                type="date"
+                className={"s-input s-val-input" + editClass}
+                value={data.validity}
+                onChange={(e) => onChange?.({ validity: e.target.value })}
+              />
+              {!data.validity && (
+                <div className="s-barcode-hint">
+                  <div />
+                </div>
               )}
-            </td>
-            <td className="s-date-label">DATA</td>
-            <td className="s-date">{data.date}</td>
-          </tr>
-          <tr>
-            <td className="s-signature">
-              <span className="s-sigcaption">
-                Assinatura
-              </span>
-            </td>
-            <td colSpan={2} className="s-signature">
-              <span className="s-sigcaption">
-                Nome do empilhador
-              </span>
-            </td>
-          </tr>
-          <tr>
-            <td colSpan={3} className="s-blank">&nbsp;</td>
-          </tr>
-          <tr>
-            <td colSpan={3} className="s-code">
-              {editable ? (
-                <input
-                  ref={codeRef}
-                  className={"s-input s-code-input" + editClass}
-                  value={data.code}
-                  placeholder="CÓDIGO"
-                  onChange={(e) => onChange?.({ code: e.target.value })}
-                />
-              ) : (
-                data.code || "------"
-              )}
-              {editable && notFound && (
-                <div className="s-notfound">Produto não encontrado</div>
-              )}
-            </td>
-          </tr>
-          <tr>
-            <td className="s-header">DESCRIÇÃO</td>
-            <td colSpan={2} className="s-header">QTD</td>
-          </tr>
-          <tr>
-            <td className="s-description">
-              {editable ? (
-                <input
-                  className={"s-input s-desc-input" + editClass}
-                  value={data.description}
-                  placeholder="—"
-                  readOnly
-                />
-              ) : (
-                data.description || "\u00A0"
-              )}
-            </td>
-            <td colSpan={2} className="s-qty">
-              {editable ? (
-                <input
-                  className={"s-input s-qty-input" + editClass}
-                  value={data.quantity}
-                  placeholder="0"
-                  inputMode="numeric"
-                  onChange={(e) =>
-                    onChange?.({ quantity: e.target.value.replace(/[^0-9]/g, "") })
-                  }
-                />
-              ) : (
-                data.quantity || "0"
-              )}
-            </td>
-          </tr>
-          <tr className="s-footer-row">
-            <td className="s-validade-label">VALIDADE</td>
-            {editable ? (
-              <td colSpan={2} className="s-validade-value s-validade-edit">
-                <input
-                  type="date"
-                  className={"s-input s-val-input" + editClass}
-                  value={data.validity}
-                  onChange={(e) => onChange?.({ validity: e.target.value })}
-                />
-                {!data.validity && (
-                  <div className="s-barcode-hint">
-                    <div />
-                  </div>
-                )}
-              </td>
-            ) : data.validity ? (
-              <td colSpan={2} className="s-validade-value">
-                {fmtValidity(data.validity)}
-              </td>
-            ) : (
-              <td colSpan={2} className="s-barcode">
-                <div />
-              </td>
-            )}
-          </tr>
-        </tbody>
-      </table>
+            </div>
+          ) : data.validity ? (
+            <div className="s-validade-value">{fmtValidity(data.validity)}</div>
+          ) : (
+            <div className="s-barcode">
+              <div />
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

@@ -170,69 +170,320 @@
   padding: 6mm;
 }
 
-.slote { width: 100%; }
-.slote-half { height: 142mm; }
-.slote-full { height: 198mm; }
-
-.slote-table {
-  width: 100%;
-  height: 100%;
-  border-collapse: collapse;
-  table-layout: fixed;
+.slote { 
+  width: 100%; 
+  display: flex;
+  flex-direction: column;
   font-family: Arial, Helvetica, sans-serif;
   color: #000;
 }
-.slote-table td {
+.slote-half { height: 142mm; }
+.slote-full { height: 198mm; }
+
+/* Elementos compartilhados */
+.slote > div {
   border: 1px solid #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   text-align: center;
-  vertical-align: middle;
   padding: 0 2mm;
 }
 
-/* ==== half (2 per A4 portrait) ==== */
-.slote-half .s-name { height: 10mm; font-size: 14pt; font-weight: 700; }
-.slote-half .s-date-label { width: 22mm; font-size: 10pt; font-weight: 700; }
-.slote-half .s-date { width: 32mm; font-size: 10pt; font-weight: 700; }
-.slote-half .s-signature { height: 14mm; vertical-align: bottom; padding-bottom: 1mm; }
-.slote-half .s-sigcaption { font-size: 7pt; }
-.slote-half .s-blank { height: 5mm; border-left: none; border-right: none; }
-.slote-half .s-code { height: 45mm; font-size: 60pt; font-weight: 900; letter-spacing: 2px; line-height: 1; }
-.slote-half .s-header { height: 8mm; font-size: 12pt; font-weight: 700; }
-.slote-half .s-description { height: 32mm; font-size: 20pt; font-weight: 900; line-height: 1.1; text-transform: uppercase; }
-.slote-half .s-qty { width: 55mm; font-size: 56pt; font-weight: 900; line-height: 1; }
-.slote-half .s-footer-row { height: 26mm; }
-.slote-half .s-validade-label {
-  width: 45mm; background: #4d4d4d; color: #fff;
-  font-size: 16pt; font-weight: 900; letter-spacing: 1px;
+/* ==== HALF (2 per A4 portrait) ==== */
+
+/* Cabeçalho: Nome, DATA, Data */
+.slote-half .s-header-row {
+  height: 10mm;
+  border-bottom: none;
 }
-.slote-half .s-validade-value { font-size: 24pt; font-weight: 900; }
-.slote-half .s-barcode { background: #111; padding: 0; }
-.slote-half .s-barcode > div {
-  height: 12mm; width: 80%; margin: auto;
-  background: repeating-linear-gradient(90deg,#fff 0,#fff 2.5mm,#000 2.5mm,#000 4mm);
+.slote-half .s-name {
+  flex: 1;
+  font-size: 14pt;
+  font-weight: 700;
+  border-right: 1px solid #000;
+}
+.slote-half .s-date-label {
+  width: 22mm;
+  font-size: 10pt;
+  font-weight: 700;
+  border-right: 1px solid #000;
+}
+.slote-half .s-date {
+  width: 32mm;
+  font-size: 10pt;
+  font-weight: 700;
 }
 
-/* ==== full (1 per A4 landscape) ==== */
-.slote-full .s-name { height: 14mm; font-size: 22pt; font-weight: 700; }
-.slote-full .s-date-label { width: 32mm; font-size: 14pt; font-weight: 700; }
-.slote-full .s-date { width: 45mm; font-size: 14pt; font-weight: 700; }
-.slote-full .s-signature { height: 18mm; vertical-align: bottom; padding-bottom: 1.5mm; }
-.slote-full .s-sigcaption { font-size: 10pt; }
-.slote-full .s-blank { height: 8mm; border-left: none; border-right: none; }
-.slote-full .s-code { height: 60mm; font-size: 92pt; font-weight: 900; letter-spacing: 3px; line-height: 1; }
-.slote-full .s-header { height: 10mm; font-size: 18pt; font-weight: 700; }
-.slote-full .s-description { height: 42mm; font-size: 32pt; font-weight: 900; line-height: 1.1; text-transform: uppercase; }
-.slote-full .s-qty { width: 80mm; font-size: 88pt; font-weight: 900; line-height: 1; }
-.slote-full .s-footer-row { height: 36mm; }
-.slote-full .s-validade-label {
-  width: 70mm; background: #4d4d4d; color: #fff;
-  font-size: 22pt; font-weight: 900; letter-spacing: 2px;
+/* Linha de assinaturas */
+.slote-half .s-signature-row {
+  height: 14mm;
+  align-items: flex-end;
+  padding-bottom: 1mm;
+  border-top: 1px solid #000;
+  border-bottom: none;
 }
-.slote-full .s-validade-value { font-size: 34pt; font-weight: 900; }
-.slote-full .s-barcode { background: #111; padding: 0; }
+.slote-half .s-signature {
+  flex: 1;
+  border-right: 1px solid #000;
+}
+.slote-half .s-signature-right {
+  flex: 2;
+  border-right: none;
+}
+.slote-half .s-sigcaption {
+  font-size: 7pt;
+}
+
+/* Espaço em branco */
+.slote-half .s-blank {
+  height: 5mm;
+  border-left: none;
+  border-right: none;
+  border-top: 1px solid #000;
+  border-bottom: none;
+}
+
+/* Código */
+.slote-half .s-code-container {
+  height: 45mm;
+  font-size: 60pt;
+  font-weight: 900;
+  letter-spacing: 2px;
+  line-height: 1;
+  position: relative;
+  border-top: 1px solid #000;
+  border-bottom: none;
+}
+
+/* Headers Descrição e QTD */
+.slote-half .s-headers-row {
+  height: 8mm;
+  border-top: 1px solid #000;
+  border-bottom: none;
+}
+.slote-half .s-header-desc {
+  flex: 1;
+  font-size: 12pt;
+  font-weight: 700;
+  border-right: 1px solid #000;
+}
+.slote-half .s-header-qty {
+  width: 55mm;
+  font-size: 12pt;
+  font-weight: 700;
+}
+
+/* Valores Descrição e QTD */
+.slote-half .s-values-row {
+  height: 32mm;
+  border-top: 1px solid #000;
+  border-bottom: none;
+}
+.slote-half .s-description {
+  flex: 1;
+  font-size: 20pt;
+  font-weight: 900;
+  line-height: 1.1;
+  text-transform: uppercase;
+  border-right: 1px solid #000;
+  padding: 2mm;
+}
+.slote-half .s-qty {
+  width: 55mm;
+  font-size: 56pt;
+  font-weight: 900;
+  line-height: 1;
+}
+
+/* Footer: Validade */
+.slote-half .s-footer-row {
+  height: 26mm;
+  border-top: 1px solid #000;
+}
+.slote-half .s-validade-label {
+  width: 30%;
+  max-width: 45mm;
+  background: #4d4d4d;
+  color: #fff;
+  font-size: 16pt;
+  font-weight: 900;
+  letter-spacing: 1px;
+  border-right: 1px solid #000;
+}
+.slote-half .s-validade-value-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+.slote-half .s-validade-value {
+  font-size: 32pt;
+  font-weight: 900;
+  width: 100%;
+}
+.slote-half .s-barcode {
+  background: #111;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.slote-half .s-barcode > div {
+  height: 12mm;
+  width: 80%;
+  background: repeating-linear-gradient(90deg, #fff 0, #fff 2.5mm, #000 2.5mm, #000 4mm);
+}
+
+/* ==== FULL (1 per A4 landscape) ==== */
+
+/* Cabeçalho: Nome, DATA, Data */
+.slote-full .s-header-row {
+  height: 14mm;
+  border-bottom: none;
+}
+.slote-full .s-name {
+  flex: 1;
+  font-size: 22pt;
+  font-weight: 700;
+  border-right: 1px solid #000;
+}
+.slote-full .s-date-label {
+  width: 32mm;
+  font-size: 14pt;
+  font-weight: 700;
+  border-right: 1px solid #000;
+}
+.slote-full .s-date {
+  width: 45mm;
+  font-size: 14pt;
+  font-weight: 700;
+}
+
+/* Linha de assinaturas */
+.slote-full .s-signature-row {
+  height: 18mm;
+  align-items: flex-end;
+  padding-bottom: 1.5mm;
+  border-top: 1px solid #000;
+  border-bottom: none;
+}
+.slote-full .s-signature {
+  flex: 1;
+  border-right: 1px solid #000;
+}
+.slote-full .s-signature-right {
+  flex: 2;
+  border-right: none;
+}
+.slote-full .s-sigcaption {
+  font-size: 10pt;
+}
+
+/* Espaço em branco */
+.slote-full .s-blank {
+  height: 8mm;
+  border-left: none;
+  border-right: none;
+  border-top: 1px solid #000;
+  border-bottom: none;
+}
+
+/* Código */
+.slote-full .s-code-container {
+  height: 60mm;
+  font-size: 92pt;
+  font-weight: 900;
+  letter-spacing: 3px;
+  line-height: 1;
+  position: relative;
+  border-top: 1px solid #000;
+  border-bottom: none;
+}
+
+/* Headers Descrição e QTD */
+.slote-full .s-headers-row {
+  height: 10mm;
+  border-top: 1px solid #000;
+  border-bottom: none;
+}
+.slote-full .s-header-desc {
+  flex: 1;
+  font-size: 18pt;
+  font-weight: 700;
+  border-right: 1px solid #000;
+}
+.slote-full .s-header-qty {
+  width: 80mm;
+  font-size: 18pt;
+  font-weight: 700;
+}
+
+/* Valores Descrição e QTD */
+.slote-full .s-values-row {
+  height: 42mm;
+  border-top: 1px solid #000;
+  border-bottom: none;
+}
+.slote-full .s-description {
+  flex: 1;
+  font-size: 32pt;
+  font-weight: 900;
+  line-height: 1.1;
+  text-transform: uppercase;
+  border-right: 1px solid #000;
+  padding: 2mm;
+}
+.slote-full .s-qty {
+  width: 80mm;
+  font-size: 88pt;
+  font-weight: 900;
+  line-height: 1;
+}
+
+/* Footer: Validade */
+.slote-full .s-footer-row {
+  height: 36mm;
+  border-top: 1px solid #000;
+}
+.slote-full .s-validade-label {
+  width: 30%;
+  max-width: 70mm;
+  background: #4d4d4d;
+  color: #fff;
+  font-size: 22pt;
+  font-weight: 900;
+  letter-spacing: 2px;
+  border-right: 1px solid #000;
+}
+.slote-full .s-validade-value-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+.slote-full .s-validade-value {
+  font-size: 44pt;
+  font-weight: 900;
+  width: 100%;
+}
+.slote-full .s-barcode {
+  background: #111;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 .slote-full .s-barcode > div {
-  height: 18mm; width: 80%; margin: auto;
-  background: repeating-linear-gradient(90deg,#fff 0,#fff 3.5mm,#000 3.5mm,#000 5.5mm);
+  height: 18mm;
+  width: 80%;
+  background: repeating-linear-gradient(90deg, #fff 0, #fff 3.5mm, #000 3.5mm, #000 5.5mm);
 }
 
 /* ==== screen responsiveness (14"-19" displays) ==== */
@@ -277,7 +528,15 @@
 .slote-editable .s-input:focus { background: rgba(255, 235, 130, 0.55); }
 .s-code-input { text-align: center; }
 .s-desc-input { text-transform: uppercase; }
-.s-validade-edit { position: relative; padding: 0 !important; }
+.s-validade-edit { 
+  position: relative; 
+  padding: 0 !important;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 .s-val-input {
   color: #000;
   font-weight: 900;
