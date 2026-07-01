@@ -42,7 +42,17 @@ function PrintPage() {
   const visible = orientation === "portrait" ? slotes.slice(0, 2) : slotes.slice(0, 1);
 
   function update(i: number, patch: Partial<SloteData>) {
-    setSlotes((s) => s.map((v, idx) => (idx === i ? { ...v, ...patch } : v)));
+    setSlotes((s) => {
+      const updated = s.map((v, idx) => (idx === i ? { ...v, ...patch } : v));
+      
+      // Se estamos no modo portrait (2 slotes verticais) e o campo responsibleName foi alterado no slote 0
+      // então duplicar para o slote 1
+      if (orientation === "portrait" && i === 0 && patch.responsibleName !== undefined) {
+        updated[1] = { ...updated[1], responsibleName: patch.responsibleName };
+      }
+      
+      return updated;
+    });
   }
 
   const codeCache = useRef<Record<string, string | null>>({});
