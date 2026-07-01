@@ -75,7 +75,12 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/dashboard' | '/login' | '/print' | '/products' | '/register'
+    | '/'
+    | '/dashboard'
+    | '/login'
+    | '/print'
+    | '/products'
+    | '/register'
   fileRoutesByTo: FileRoutesByTo
   to: '/' | '/dashboard' | '/login' | '/print' | '/products' | '/register'
   id:
