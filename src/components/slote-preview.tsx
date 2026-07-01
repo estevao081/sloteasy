@@ -69,15 +69,13 @@ export function Slote({
           </tr>
           <tr>
             <td className="s-signature">
-              <span className="s-sigline" />
               <span className="s-sigcaption">
-                Assinatura do responsável pela criação do Slote
+                Assinatura
               </span>
             </td>
             <td colSpan={2} className="s-signature">
-              <span className="s-sigline" />
               <span className="s-sigcaption">
-                Nome e assinatura do responsável por guardar o palete
+                Nome do empilhador
               </span>
             </td>
           </tr>

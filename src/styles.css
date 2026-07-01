@@ -194,9 +194,6 @@
 .slote-half .s-date-label { width: 22mm; font-size: 10pt; font-weight: 700; }
 .slote-half .s-date { width: 32mm; font-size: 10pt; font-weight: 700; }
 .slote-half .s-signature { height: 14mm; vertical-align: bottom; padding-bottom: 1mm; }
-.slote-half .s-sigline {
-  display: block; border-top: 1px solid #000; margin: 0 4mm 1mm;
-}
 .slote-half .s-sigcaption { font-size: 7pt; }
 .slote-half .s-blank { height: 5mm; border-left: none; border-right: none; }
 .slote-half .s-code { height: 45mm; font-size: 60pt; font-weight: 900; letter-spacing: 2px; line-height: 1; }
@@ -220,7 +217,6 @@
 .slote-full .s-date-label { width: 32mm; font-size: 14pt; font-weight: 700; }
 .slote-full .s-date { width: 45mm; font-size: 14pt; font-weight: 700; }
 .slote-full .s-signature { height: 18mm; vertical-align: bottom; padding-bottom: 1.5mm; }
-.slote-full .s-sigline { display: block; border-top: 1px solid #000; margin: 0 6mm 1.5mm; }
 .slote-full .s-sigcaption { font-size: 10pt; }
 .slote-full .s-blank { height: 8mm; border-left: none; border-right: none; }
 .slote-full .s-code { height: 60mm; font-size: 92pt; font-weight: 900; letter-spacing: 3px; line-height: 1; }
