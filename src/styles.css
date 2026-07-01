@@ -315,8 +315,10 @@
   .print-sheet {
     border: 0 !important;
     margin: 0 !important;
+    margin-bottom: 0 !important;
     transform: none !important;
     box-shadow: none !important;
+    page-break-after: avoid !important;
   }
   .print-portrait .print-sheet { width: 210mm !important; height: 297mm !important; }
   .print-landscape .print-sheet { width: 297mm !important; height: 210mm !important; }
@@ -327,6 +329,11 @@
   .s-val-input::-webkit-calendar-picker-indicator { display: none !important; }
   input[type="date"].s-val-input {
     -webkit-appearance: none; appearance: none;
+  }
+  .preview-area, .print-scale, .print-root {
+    margin: 0 !important;
+    padding: 0 !important;
+    page-break-after: avoid !important;
   }
 }
 @page landscape-page { size: A4 landscape; margin: 0; }
