@@ -299,7 +299,7 @@
 
 /* Footer: Validade */
 .slote-half .s-footer-row {
-  height: 26mm;
+  height: 22mm;
   border-top: 1px solid #000;
 }
 .slote-half .s-validade-label {
@@ -307,7 +307,7 @@
   max-width: 45mm;
   background: #4d4d4d;
   color: #fff;
-  font-size: 16pt;
+  font-size: 14pt;
   font-weight: 900;
   letter-spacing: 1px;
   border-right: 1px solid #000;
