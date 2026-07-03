@@ -598,6 +598,13 @@
   font-weight: 700;
   margin-top: -2mm;
 }
+.s-val-input::-webkit-calendar-picker-indicator { display: none !important; }
+input[type="date"].s-val-input {
+  -webkit-appearance: none; appearance: none;
+}
+.s-validade-value-container {
+  overflow: hidden;
+}
 
 /* ============ PRINT ============ */
 @media print {
