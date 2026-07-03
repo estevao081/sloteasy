@@ -45,7 +45,7 @@ export function AppShell({ children, title }: { children: ReactNode; title: stri
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex w-full bg-muted/20">
+      <div className="min-h-screen flex w-full bg-muted/20 print:block print:min-h-0">
         <Sidebar collapsible="icon" className="no-print">
           <SidebarHeader className="border-b">
             <div className="flex items-center gap-2 px-2 py-1.5">
@@ -86,12 +86,12 @@ export function AppShell({ children, title }: { children: ReactNode; title: stri
           </SidebarFooter>
         </Sidebar>
 
-        <div className="flex-1 flex flex-col min-w-0">
+        <div className="flex-1 flex flex-col min-w-0 print:block">
           <header className="no-print h-14 flex items-center gap-3 border-b bg-background px-4">
             <SidebarTrigger />
             <h1 className="font-semibold text-base">{title}</h1>
           </header>
-          <main className="flex-1 p-6">{children}</main>
+          <main className="flex-1 p-6 print:p-0 print:m-0">{children}</main>
         </div>
       </div>
     </SidebarProvider>

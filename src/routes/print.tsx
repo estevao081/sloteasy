@@ -109,7 +109,7 @@ function PrintPage() {
 
   return (
     <AppShell title="Impressão de Slotes">
-      <div className={`space-y-4 print-root print-${orientation}`}>
+      <div className={`space-y-4 print:space-y-0 print-root print-${orientation}`}>
         <Card className="no-print">
           <CardContent className="p-4 flex flex-wrap items-end gap-6">
             <div className="space-y-2">
