@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Slote, type SloteData } from "@/components/slote-preview";
-import { productService } from "@/lib/products";
+import { productService, type Product } from "@/lib/products";
 import { Printer } from "lucide-react";
 import { toast } from "sonner";
 
@@ -65,23 +65,30 @@ function PrintPage() {
     setFieldErrors((errs) => errs.map((e, idx) => (idx === i ? {} : e)));
   }
 
-  const codeCache = useRef<Record<string, string | null>>({});
-  async function lookup(i: number, code: string) {
-    const v = code.trim();
+  // A API expõe dois endpoints (/products/code/{code} e /products/name/{name}).
+  // O campo de busca é único: se o usuário digitar exatamente 6 números,
+  // buscamos por código; qualquer outra coisa, buscamos por nome.
+  const CODE_PATTERN = /^\d{6}$/;
+  const searchCache = useRef<Record<string, Product | null>>({});
+  async function lookup(i: number, value: string) {
+    const v = value.trim();
     if (!v) {
       update(i, { description: "" });
       setNotFound((n) => n.map((x, idx) => (idx === i ? false : x)));
       return;
     }
+    const byCode = CODE_PATTERN.test(v);
+    const cacheKey = `${byCode ? "code" : "name"}:${v.toLowerCase()}`;
     try {
-      let name = codeCache.current[v];
-      if (name === undefined) {
-        const p = await productService.getByCode(v);
-        name = p ? p.name : null;
-        codeCache.current[v] = name;
+      let product = searchCache.current[cacheKey];
+      if (product === undefined) {
+        product = byCode ? await productService.getByCode(v) : await productService.getByName(v);
+        searchCache.current[cacheKey] = product;
       }
-      if (name) {
-        update(i, { description: name });
+      if (product) {
+        // Quando a busca é por nome, substituímos o texto digitado pelo
+        // código real do produto retornado pela API.
+        update(i, { description: product.name, ...(byCode ? {} : { code: product.code }) });
         setNotFound((n) => n.map((x, idx) => (idx === i ? false : x)));
       } else {
         update(i, { description: "" });
@@ -97,6 +104,25 @@ function PrintPage() {
     // reset today's date on each slote when day changes (kept simple)
     setSlotes((s) => s.map((v) => ({ ...v, date: today })));
   }, [today]);
+
+  useEffect(() => {
+    // Alterna dinamicamente o tamanho físico da página (@page) conforme a
+    // orientação escolhida. Evitamos o recurso de "named pages" do CSS
+    // (page: nome-da-pagina), que tem suporte instável nos navegadores e
+    // costumava gerar uma folha extra em branco ao trocar de tamanho de
+    // página no modo paisagem.
+    const styleId = "print-page-size";
+    let styleEl = document.getElementById(styleId) as HTMLStyleElement | null;
+    if (!styleEl) {
+      styleEl = document.createElement("style");
+      styleEl.id = styleId;
+      document.head.appendChild(styleEl);
+    }
+    styleEl.textContent = `@media print { @page { size: A4 ${orientation}; margin: 0; } }`;
+    return () => {
+      styleEl?.remove();
+    };
+  }, [orientation]);
 
   function handlePrint() {
     const errors: SloteFieldErrors[] = visible.map(() => ({}));
@@ -171,8 +197,8 @@ function PrintPage() {
               </RadioGroup>
             </div>
             <div className="text-xs text-muted-foreground max-w-xs">
-              Clique dentro dos campos do slote para editar. A descrição é preenchida automaticamente
-              pelo código.
+              Clique dentro dos campos do slote para editar. Digite o código (6 números) ou o nome
+              do produto — a descrição e o código são preenchidos automaticamente pela busca.
             </div>
             <div className="ml-auto flex gap-2">
               {visible.map((_, i) => (

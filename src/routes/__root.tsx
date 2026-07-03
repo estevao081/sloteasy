@@ -78,8 +78,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "slotEasy" },
+      { title: "Lovable App" },
+      { name: "description", content: "Lovable Generated Project" },
+      { name: "author", content: "Lovable" },
+      { property: "og:title", content: "Lovable App" },
+      { property: "og:description", content: "Lovable Generated Project" },
       { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
       {
@@ -115,7 +121,16 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
-      <Toaster richColors position="top-center" className="no-print" />
+      {/* O sonner sempre renderiza um <section> vazio no DOM, mesmo sem toasts
+          ativos, e não repassa className para esse elemento. Envolvemos em
+          .no-print para garantir que ele (e seus filhos) nunca entrem no
+          fluxo de impressão — caso contrário, esse elemento residual (sem a
+          página nomeada landscape-page) força uma quebra de página extra
+          logo após a folha, gerando uma segunda página em branco na
+          orientação horizontal. */}
+      <div className="no-print">
+        <Toaster richColors position="top-center" />
+      </div>
     </QueryClientProvider>
   );
 }

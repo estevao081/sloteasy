@@ -662,7 +662,6 @@ input[type="date"].s-val-input {
   }
   .print-portrait .print-sheet { width: 210mm !important; height: 297mm !important; }
   .print-landscape .print-sheet { width: 297mm !important; height: 210mm !important; }
-  .print-landscape { page: landscape-page; }
   .slote-editable .s-input { background: transparent !important; }
   .s-notfound { display: none !important; }
   .s-field-error {
@@ -689,5 +688,4 @@ input[type="date"].s-val-input {
     color-adjust: exact !important;
   }
 }
-@page landscape-page { size: A4 landscape; margin: 0; }
 
