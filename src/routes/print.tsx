@@ -33,11 +33,18 @@ function emptySlote(date: string): SloteData {
   };
 }
 
+type SloteFieldErrors = {
+  responsibleName?: boolean;
+  code?: boolean;
+  quantity?: boolean;
+};
+
 function PrintPage() {
   const today = useMemo(() => formatDate(new Date()), []);
   const [orientation, setOrientation] = useState<"portrait" | "landscape">("portrait");
   const [slotes, setSlotes] = useState<SloteData[]>(() => [emptySlote(today), emptySlote(today)]);
   const [notFound, setNotFound] = useState<boolean[]>([false, false]);
+  const [fieldErrors, setFieldErrors] = useState<SloteFieldErrors[]>([{}, {}]);
 
   const visible = orientation === "portrait" ? slotes.slice(0, 2) : slotes.slice(0, 1);
 
@@ -53,6 +60,9 @@ function PrintPage() {
       
       return updated;
     });
+    // Assim que o usuário edita o slote, removemos o destaque de erro dele —
+    // a próxima tentativa de impressão revalida o que ainda estiver faltando.
+    setFieldErrors((errs) => errs.map((e, idx) => (idx === i ? {} : e)));
   }
 
   const codeCache = useRef<Record<string, string | null>>({});
@@ -89,22 +99,53 @@ function PrintPage() {
   }, [today]);
 
   function handlePrint() {
+    const errors: SloteFieldErrors[] = visible.map(() => ({}));
+    const messages: string[] = [];
+
     for (let i = 0; i < visible.length; i++) {
       const s = visible[i];
-      const hasAny = s.responsibleName || s.code || s.quantity || s.description;
-      if (!hasAny) continue; // allow blank second slote in portrait
-      if (!s.responsibleName.trim()) return toast.error(`Slote ${i + 1}: informe seu nome.`);
-      if (!s.code.trim()) return toast.error(`Slote ${i + 1}: informe o código.`);
-      if (!s.quantity.trim()) return toast.error(`Slote ${i + 1}: informe a quantidade.`);
-      if (notFound[i]) return toast.error(`Slote ${i + 1}: produto não encontrado.`);
+      const hasAny = s.responsibleName.trim() || s.code.trim() || s.quantity.trim() || s.description.trim();
+      if (!hasAny) continue; // permite deixar o segundo slote em branco (retrato)
+
+      const missing: string[] = [];
+      if (!s.responsibleName.trim()) {
+        errors[i].responsibleName = true;
+        missing.push("nome");
+      }
+      if (!s.code.trim()) {
+        errors[i].code = true;
+        missing.push("código");
+      }
+      if (!s.quantity.trim()) {
+        errors[i].quantity = true;
+        missing.push("quantidade");
+      }
+      if (missing.length > 0) {
+        messages.push(`Slote ${i + 1}: preencha ${missing.join(", ")}.`);
+      }
+      if (notFound[i]) {
+        messages.push(`Slote ${i + 1}: produto não encontrado.`);
+      }
     }
-    if (!visible.some((s) => s.code.trim())) return toast.error("Preencha ao menos um slote.");
+
+    if (messages.length === 0 && !visible.some((s) => s.code.trim())) {
+      messages.push("Preencha ao menos um slote antes de imprimir.");
+    }
+
+    setFieldErrors((prev) => prev.map((e, idx) => errors[idx] ?? e));
+
+    if (messages.length > 0) {
+      messages.forEach((m) => toast.error(m));
+      return;
+    }
+
     window.print();
   }
 
   function clearSlote(i: number) {
     setSlotes((s) => s.map((v, idx) => (idx === i ? emptySlote(today) : v)));
     setNotFound((n) => n.map((x, idx) => (idx === i ? false : x)));
+    setFieldErrors((errs) => errs.map((e, idx) => (idx === i ? {} : e)));
   }
 
   return (
@@ -156,6 +197,7 @@ function PrintPage() {
                   orientation={orientation}
                   editable
                   notFound={notFound[i]}
+                  errors={fieldErrors[i]}
                   onChange={(patch) => update(i, patch)}
                   onCodeCommit={(code) => lookup(i, code)}
                 />

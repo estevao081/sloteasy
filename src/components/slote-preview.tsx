@@ -16,6 +16,11 @@ interface Props {
   onChange?: (patch: Partial<SloteData>) => void;
   onCodeCommit?: (code: string) => void;
   notFound?: boolean;
+  errors?: {
+    responsibleName?: boolean;
+    code?: boolean;
+    quantity?: boolean;
+  };
 }
 
 function fmtValidity(v: string) {
@@ -32,6 +37,7 @@ export function Slote({
   onChange,
   onCodeCommit,
   notFound,
+  errors,
 }: Props) {
   const sizeClass = orientation === "landscape" ? "slote-full" : "slote-half";
   const codeRef = useRef<HTMLInputElement>(null);
@@ -51,7 +57,7 @@ export function Slote({
     <div className={`slote ${sizeClass}${editable ? " slote-editable" : ""}`}>
       {/* Cabeçalho: Nome, Data Label, Data */}
       <div className="s-header-row">
-        <div className="s-name">
+        <div className={`s-name${errors?.responsibleName ? " s-field-error" : ""}`}>
           {editable ? (
             <input
               className={"s-input" + editClass}
@@ -81,7 +87,7 @@ export function Slote({
       <div className="s-blank">&nbsp;</div>
 
       {/* Código */}
-      <div className="s-code-container">
+      <div className={`s-code-container${errors?.code ? " s-field-error" : ""}`}>
         {editable ? (
           <input
             ref={codeRef}
@@ -118,7 +124,7 @@ export function Slote({
             data.description || "\u00A0"
           )}
         </div>
-        <div className="s-qty">
+        <div className={`s-qty${errors?.quantity ? " s-field-error" : ""}`}>
           {editable ? (
             <input
               className={"s-input s-qty-input" + editClass}
