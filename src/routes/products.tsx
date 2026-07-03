@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { AppShell } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -28,6 +28,9 @@ function ProductsPage() {
   const [name, setName] = useState("");
   const [editingId, setEditingId] = useState<number | null>(null);
   const [search, setSearch] = useState("");
+  const [searchResults, setSearchResults] = useState<Product[] | null>(null);
+  const [searching, setSearching] = useState(false);
+  const [searchError, setSearchError] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   
   // Paginação
@@ -57,13 +60,49 @@ function ProductsPage() {
     refresh();
   }, [currentPage]);
 
-  const filtered = useMemo(() => {
-    const q = search.trim().toLowerCase();
-    if (!q) return items || [];
-    return (items || []).filter(
-      (p) => p.code.toLowerCase().includes(q) || p.name.toLowerCase().includes(q),
-    );
-  }, [items, search]);
+  // A API expõe dois endpoints (/products/code/{code} e /products/name/{name}).
+  // O campo de busca é único: se o usuário digitar exatamente 6 números,
+  // buscamos por código (resultado único); qualquer outra coisa, buscamos
+  // por nome, que retorna todos os produtos cujo nome contenha o texto.
+  const CODE_PATTERN = /^\d{6}$/;
+
+  useEffect(() => {
+    const q = search.trim();
+    if (!q) {
+      setSearchResults(null);
+      setSearching(false);
+      setSearchError(null);
+      return;
+    }
+
+    let cancelled = false;
+    setSearching(true);
+    setSearchError(null);
+
+    const timer = setTimeout(async () => {
+      try {
+        const results = CODE_PATTERN.test(q)
+          ? await productService.getByCode(q).then((p) => (p ? [p] : []))
+          : await productService.searchByName(q);
+        if (!cancelled) setSearchResults(results);
+      } catch (err) {
+        if (!cancelled) {
+          setSearchError((err as Error).message);
+          setSearchResults([]);
+        }
+      } finally {
+        if (!cancelled) setSearching(false);
+      }
+    }, 350);
+
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [search]);
+
+  const isSearchMode = searchResults !== null;
+  const displayed = isSearchMode ? searchResults : items;
 
   function reset() {
     setCode("");
@@ -143,12 +182,26 @@ function ProductsPage() {
             <div className="relative max-w-sm">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Pesquisar por código ou nome"
+                placeholder="Pesquisar por código (6 dígitos) ou nome do produto"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="pl-9"
               />
             </div>
+            {isSearchMode && (
+              <div className="flex items-center justify-between text-sm text-muted-foreground -mt-2">
+                <span>
+                  {searching
+                    ? "Buscando..."
+                    : searchError
+                      ? searchError
+                      : `${displayed.length} resultado${displayed.length === 1 ? "" : "s"} para "${search.trim()}" (busca por ${CODE_PATTERN.test(search.trim()) ? "código" : "nome"})`}
+                </span>
+                <Button type="button" variant="ghost" size="sm" onClick={() => setSearch("")}>
+                  Limpar busca
+                </Button>
+              </div>
+            )}
             <Table>
               <TableHeader>
                 <TableRow>
@@ -158,22 +211,25 @@ function ProductsPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {loading && (
+                {(loading || searching) && (
                   <TableRow>
                     <TableCell colSpan={3} className="text-center text-muted-foreground py-8">
-                      Carregando...
+                      {searching ? "Buscando..." : "Carregando..."}
                     </TableCell>
                   </TableRow>
                 )}
-                {!loading && filtered.length === 0 && (
+                {!loading && !searching && displayed.length === 0 && (
                   <TableRow>
                     <TableCell colSpan={3} className="text-center text-muted-foreground py-8">
-                      Nenhum produto encontrado
+                      {isSearchMode
+                        ? `Nenhum produto encontrado para "${search.trim()}"`
+                        : "Nenhum produto encontrado"}
                     </TableCell>
                   </TableRow>
                 )}
                 {!loading &&
-                  filtered.map((p) => (
+                  !searching &&
+                  displayed.map((p) => (
                     <TableRow key={p.id ?? p.code}>
                       <TableCell className="font-mono">{p.code}</TableCell>
                       <TableCell>{p.name}</TableCell>
@@ -191,7 +247,7 @@ function ProductsPage() {
             </Table>
             
             {/* Controles de Paginação */}
-            {!loading && totalElements > 0 && (
+            {!isSearchMode && !loading && totalElements > 0 && (
               <div className="flex items-center justify-between pt-4 border-t">
                 <div className="text-sm text-muted-foreground">
                   Mostrando {currentPage * itemsPerPage + 1} a {Math.min((currentPage + 1) * itemsPerPage, totalElements)} de {totalElements} produtos
