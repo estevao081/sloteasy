@@ -32,7 +32,14 @@ export const authService = {
     return readSession();
   },
   isAuthenticated(): boolean {
-    return !!getToken();
+    const token = getToken();
+    if (!token) return false;
+    if (isJwtExpired(token)) {
+      setToken(null);
+      writeSession(null);
+      return false;
+    }
+    return true;
   },
   async login(email: string, password: string): Promise<SessionUser> {
     const res = await api<LoginResponse>("/auth/login", {
