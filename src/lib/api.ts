@@ -41,6 +41,16 @@ export async function api<T>(
   const data = text ? safeJson(text) : null;
 
   if (!res.ok) {
+    if (auth && (res.status === 401 || res.status === 403)) {
+      setToken(null);
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("slotes:session");
+        if (window.location.pathname !== "/login") {
+          window.location.replace("/login");
+        }
+      }
+      throw new Error("Sessão expirada. Faça login novamente.");
+    }
     const msg =
       (data && (data.message || data.error)) ||
       (typeof data === "string" ? data : null) ||
