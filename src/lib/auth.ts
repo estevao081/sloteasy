@@ -1,5 +1,19 @@
 import { api, getToken, setToken } from "./api";
 
+function isJwtExpired(token: string): boolean {
+  try {
+    const part = token.split(".")[1];
+    if (!part) return false;
+    const payload = JSON.parse(
+      atob(part.replace(/-/g, "+").replace(/_/g, "/")),
+    );
+    if (typeof payload.exp !== "number") return false;
+    return Date.now() >= payload.exp * 1000;
+  } catch {
+    return false;
+  }
+}
+
 export interface SessionUser {
   email: string;
   name?: string;
@@ -32,7 +46,14 @@ export const authService = {
     return readSession();
   },
   isAuthenticated(): boolean {
-    return !!getToken();
+    const token = getToken();
+    if (!token) return false;
+    if (isJwtExpired(token)) {
+      setToken(null);
+      writeSession(null);
+      return false;
+    }
+    return true;
   },
   async login(email: string, password: string): Promise<SessionUser> {
     const res = await api<LoginResponse>("/auth/login", {
