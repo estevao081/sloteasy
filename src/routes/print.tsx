@@ -125,46 +125,6 @@ function PrintPage() {
   }, [orientation]);
 
   function handlePrint() {
-    const errors: SloteFieldErrors[] = visible.map(() => ({}));
-    const messages: string[] = [];
-
-    for (let i = 0; i < visible.length; i++) {
-      const s = visible[i];
-      const hasAny = s.responsibleName.trim() || s.code.trim() || s.quantity.trim() || s.description.trim();
-      if (!hasAny) continue; // permite deixar o segundo slote em branco (retrato)
-
-      const missing: string[] = [];
-      if (!s.responsibleName.trim()) {
-        errors[i].responsibleName = true;
-        missing.push("nome");
-      }
-      if (!s.code.trim()) {
-        errors[i].code = true;
-        missing.push("código");
-      }
-      if (!s.quantity.trim()) {
-        errors[i].quantity = true;
-        missing.push("quantidade");
-      }
-      if (missing.length > 0) {
-        messages.push(`Slote ${i + 1}: preencha ${missing.join(", ")}.`);
-      }
-      if (notFound[i]) {
-        messages.push(`Slote ${i + 1}: produto não encontrado.`);
-      }
-    }
-
-    if (messages.length === 0 && !visible.some((s) => s.code.trim())) {
-      messages.push("Preencha ao menos um slote antes de imprimir.");
-    }
-
-    setFieldErrors((prev) => prev.map((e, idx) => errors[idx] ?? e));
-
-    if (messages.length > 0) {
-      messages.forEach((m) => toast.error(m));
-      return;
-    }
-
     window.print();
   }
 
