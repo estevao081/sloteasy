@@ -552,7 +552,16 @@
 .slote-editable .s-input:hover { background: rgba(255, 235, 130, 0.35); }
 .slote-editable .s-input:focus { background: rgba(255, 235, 130, 0.55); }
 .s-code-input { text-align: center; }
-.s-desc-input { text-transform: uppercase; }
+textarea.s-desc-input {
+  text-transform: uppercase;
+  resize: none;
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  overflow: hidden;
+  display: block;
+}
+.s-description { white-space: normal; word-break: break-word; overflow-wrap: anywhere; }
 .s-name .s-input { text-transform: uppercase; }
 .s-validade-edit { 
   position: relative; 
