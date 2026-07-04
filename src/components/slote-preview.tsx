@@ -114,11 +114,12 @@ export function Slote({
       <div className="s-values-row">
         <div className="s-description">
           {editable ? (
-            <input
+            <textarea
               className={"s-input s-desc-input" + editClass}
               value={data.description}
               placeholder="—"
               readOnly
+              rows={2}
             />
           ) : (
             data.description || "\u00A0"
