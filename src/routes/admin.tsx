@@ -131,6 +131,40 @@ function AdminPage() {
     <AppShell title="Administração">
       <div className="space-y-6 max-w-5xl">
         <Card>
+          <CardContent className="p-6">
+            <form onSubmit={onCreate} className="grid gap-4 sm:grid-cols-[200px_1fr_auto] items-end">
+              <div className="space-y-2">
+                <Label htmlFor="drt">DRT</Label>
+                <Input
+                  id="drt"
+                  required
+                  value={drt}
+                  onChange={(e) => setDrt(e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="password">Senha</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </div>
+              <div className="flex gap-2">
+                <Button type="submit" disabled={creating}>
+                  {creating ? "Cadastrando..." : "Cadastrar Usuário"}
+                </Button>
+              </div>
+              {createError && (
+                <p className="text-sm text-destructive sm:col-span-3">{createError}</p>
+              )}
+            </form>
+          </CardContent>
+        </Card>
+
+        <Card>
           <CardContent className="p-6 space-y-4">
             {error && <p className="text-sm text-destructive">{error}</p>}
             <Table>
