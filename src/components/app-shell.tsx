@@ -14,13 +14,14 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { LayoutDashboard, Package, Printer, LogOut } from "lucide-react";
+import { LayoutDashboard, Package, Printer, Shield, LogOut } from "lucide-react";
 import { authService } from "@/lib/auth";
 
 const items = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
   { title: "Produtos", url: "/products", icon: Package },
   { title: "Impressão", url: "/print", icon: Printer },
+  { title: "Administração", url: "/admin", icon: Shield },
 ] as const;
 
 export function AppShell({ children, title }: { children: ReactNode; title: string }) {
