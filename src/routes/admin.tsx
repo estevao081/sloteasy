@@ -41,6 +41,12 @@ function AdminPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const [drt, setDrt] = useState("");
+  const [name, setName] = useState("");
+  const [password, setPassword] = useState("");
+  const [createError, setCreateError] = useState<string | null>(null);
+  const [creating, setCreating] = useState(false);
+
   const [editing, setEditing] = useState<User | null>(null);
   const [editName, setEditName] = useState("");
   const [editDrt, setEditDrt] = useState("");
@@ -65,6 +71,23 @@ function AdminPage() {
   useEffect(() => {
     refresh();
   }, []);
+
+  async function onCreate(e: React.FormEvent) {
+    e.preventDefault();
+    setCreateError(null);
+    setCreating(true);
+    try {
+      await userService.create({ drt, name, password });
+      setDrt("");
+      setName("");
+      setPassword("");
+      await refresh();
+    } catch (err) {
+      setCreateError((err as Error).message);
+    } finally {
+      setCreating(false);
+    }
+  }
 
   function onEdit(u: User) {
     setEditing(u);
