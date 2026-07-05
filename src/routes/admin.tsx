@@ -41,6 +41,12 @@ function AdminPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const [drt, setDrt] = useState("");
+  const [name, setName] = useState("");
+  const [password, setPassword] = useState("");
+  const [createError, setCreateError] = useState<string | null>(null);
+  const [creating, setCreating] = useState(false);
+
   const [editing, setEditing] = useState<User | null>(null);
   const [editName, setEditName] = useState("");
   const [editDrt, setEditDrt] = useState("");
@@ -65,6 +71,23 @@ function AdminPage() {
   useEffect(() => {
     refresh();
   }, []);
+
+  async function onCreate(e: React.FormEvent) {
+    e.preventDefault();
+    setCreateError(null);
+    setCreating(true);
+    try {
+      await userService.create({ drt, name, password });
+      setDrt("");
+      setName("");
+      setPassword("");
+      await refresh();
+    } catch (err) {
+      setCreateError((err as Error).message);
+    } finally {
+      setCreating(false);
+    }
+  }
 
   function onEdit(u: User) {
     setEditing(u);
@@ -108,6 +131,52 @@ function AdminPage() {
   return (
     <AppShell title="Administração">
       <div className="space-y-6 max-w-5xl">
+        <Card>
+          <CardContent className="p-6">
+            <form
+              onSubmit={onCreate}
+              className="grid gap-4 sm:grid-cols-[160px_1fr_1fr_auto] items-end"
+            >
+              <div className="space-y-2">
+                <Label htmlFor="drt">DRT</Label>
+                <Input
+                  id="drt"
+                  required
+                  value={drt}
+                  onChange={(e) => setDrt(e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="name">Nome</Label>
+                <Input
+                  id="name"
+                  required
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="password">Senha</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </div>
+              <div className="flex gap-2">
+                <Button type="submit" disabled={creating}>
+                  {creating ? "Cadastrando..." : "Cadastrar Usuário"}
+                </Button>
+              </div>
+              {createError && (
+                <p className="text-sm text-destructive sm:col-span-4">{createError}</p>
+              )}
+            </form>
+          </CardContent>
+        </Card>
+
         <Card>
           <CardContent className="p-6 space-y-4">
             {error && <p className="text-sm text-destructive">{error}</p>}
