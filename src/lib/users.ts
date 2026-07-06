@@ -20,6 +20,12 @@ export const userService = {
       return [];
     });
   },
+  create(u: { name: string; drt: string; password: string; role: UserRole }): Promise<User> {
+    return api<User>("/admin", {
+      method: "POST",
+      body: JSON.stringify(u),
+    });
+  },
   update(id: number, u: { name: string; drt: string; role: UserRole }): Promise<User> {
     return api<User>(`/admin/${id}`, {
       method: "PUT",
