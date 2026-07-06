@@ -41,6 +41,13 @@ function AdminPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const [newDrt, setNewDrt] = useState("");
+  const [newName, setNewName] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [newRole, setNewRole] = useState<UserRole>("USER");
+  const [creating, setCreating] = useState(false);
+  const [createError, setCreateError] = useState<string | null>(null);
+
   const [editing, setEditing] = useState<User | null>(null);
   const [editName, setEditName] = useState("");
   const [editDrt, setEditDrt] = useState("");
@@ -105,9 +112,89 @@ function AdminPage() {
     }
   }
 
+  async function onCreate(e: React.FormEvent) {
+    e.preventDefault();
+    setCreating(true);
+    setCreateError(null);
+    try {
+      await userService.create({
+        drt: newDrt,
+        name: newName,
+        password: newPassword,
+        role: newRole,
+      });
+      setNewDrt("");
+      setNewName("");
+      setNewPassword("");
+      setNewRole("USER");
+      await refresh();
+    } catch (err) {
+      setCreateError((err as Error).message);
+    } finally {
+      setCreating(false);
+    }
+  }
+
   return (
     <AppShell title="Administração">
       <div className="space-y-6 max-w-5xl">
+        <Card>
+          <CardContent className="p-6">
+            <form
+              onSubmit={onCreate}
+              className="grid gap-4 sm:grid-cols-[140px_1fr_1fr_140px_auto] items-end"
+            >
+              <div className="space-y-2">
+                <Label htmlFor="new-drt">DRT</Label>
+                <Input
+                  id="new-drt"
+                  required
+                  value={newDrt}
+                  onChange={(e) => setNewDrt(e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="new-name">Nome</Label>
+                <Input
+                  id="new-name"
+                  required
+                  value={newName}
+                  onChange={(e) => setNewName(e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="new-password">Senha</Label>
+                <Input
+                  id="new-password"
+                  type="password"
+                  required
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="new-role">Role</Label>
+                <Select value={newRole} onValueChange={(v) => setNewRole(v as UserRole)}>
+                  <SelectTrigger id="new-role">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="USER">USER</SelectItem>
+                    <SelectItem value="ADMIN">ADMIN</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <Button type="submit" disabled={creating}>
+                {creating ? "Cadastrando..." : "Cadastrar Usuário"}
+              </Button>
+              {createError && (
+                <p className="text-sm text-destructive sm:col-span-5">{createError}</p>
+              )}
+            </form>
+          </CardContent>
+        </Card>
+
+
         <Card>
           <CardContent className="p-6 space-y-4">
             {error && <p className="text-sm text-destructive">{error}</p>}
