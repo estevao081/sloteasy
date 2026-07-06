@@ -41,6 +41,13 @@ function AdminPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const [newDrt, setNewDrt] = useState("");
+  const [newName, setNewName] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [newRole, setNewRole] = useState<UserRole>("USER");
+  const [creating, setCreating] = useState(false);
+  const [createError, setCreateError] = useState<string | null>(null);
+
   const [editing, setEditing] = useState<User | null>(null);
   const [editName, setEditName] = useState("");
   const [editDrt, setEditDrt] = useState("");
