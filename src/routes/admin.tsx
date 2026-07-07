@@ -55,6 +55,19 @@ function AdminPage() {
   const [saving, setSaving] = useState(false);
   const [editError, setEditError] = useState<string | null>(null);
 
+  const [filterRole, setFilterRole] = useState<"all" | UserRole>("all");
+  const [searchText, setSearchText] = useState("");
+
+  const filteredItems = items.filter((u) => {
+    const matchesRole = filterRole === "all" || u.role === filterRole;
+    const q = searchText.trim().toLowerCase();
+    const matchesSearch =
+      !q ||
+      u.name.toLowerCase().includes(q) ||
+      u.drt.toLowerCase().includes(q);
+    return matchesRole && matchesSearch;
+  });
+
   async function refresh() {
     setLoading(true);
     setError(null);
