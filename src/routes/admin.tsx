@@ -211,6 +211,32 @@ function AdminPage() {
         <Card>
           <CardContent className="p-6 space-y-4">
             {error && <p className="text-sm text-destructive">{error}</p>}
+            <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-end">
+              <div className="relative w-full sm:max-w-sm">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Buscar por nome ou DRT"
+                  value={searchText}
+                  onChange={(e) => setSearchText(e.target.value)}
+                  className="pl-9"
+                />
+              </div>
+              <div className="w-full sm:w-40">
+                <Select
+                  value={filterRole}
+                  onValueChange={(v) => setFilterRole(v as "all" | UserRole)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Filtrar por role" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todos</SelectItem>
+                    <SelectItem value="USER">USER</SelectItem>
+                    <SelectItem value="ADMIN">ADMIN</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
             <Table>
               <TableHeader>
                 <TableRow>
@@ -228,7 +254,7 @@ function AdminPage() {
                     </TableCell>
                   </TableRow>
                 )}
-                {!loading && items.length === 0 && (
+                {!loading && filteredItems.length === 0 && (
                   <TableRow>
                     <TableCell colSpan={4} className="text-center text-muted-foreground py-8">
                       Nenhum usuário encontrado
@@ -236,7 +262,7 @@ function AdminPage() {
                   </TableRow>
                 )}
                 {!loading &&
-                  items.map((u) => (
+                  filteredItems.map((u) => (
                     <TableRow key={u.id ?? u.drt}>
                       <TableCell>{u.name}</TableCell>
                       <TableCell className="font-mono">{u.drt}</TableCell>
