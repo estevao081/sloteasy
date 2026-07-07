@@ -1,32 +1,12 @@
-const TOKEN_KEY = "slotes:token";
-
 export const API_BASE_URL =
-  (import.meta.env.VITE_API_URL as string | undefined) ?? "https://sloteasy-api.onrender.com";
+  (import.meta.env.VITE_API_URL as string | undefined) ?? "http://localhost:8090";
 
-export function getToken(): string | null {
-  if (typeof window === "undefined") return null;
-  return localStorage.getItem(TOKEN_KEY);
-}
-
-export function setToken(token: string | null) {
-  if (typeof window === "undefined") return;
-  if (token) localStorage.setItem(TOKEN_KEY, token);
-  else localStorage.removeItem(TOKEN_KEY);
-}
-
-export async function api<T>(
-  path: string,
-  options: RequestInit & { auth?: boolean } = {},
-): Promise<T> {
-  const { auth = true, headers, ...rest } = options;
+export async function api<T>(path: string, options: RequestInit = {}): Promise<T> {
+  const { headers, ...rest } = options;
   const h: Record<string, string> = {
     "Content-Type": "application/json",
     ...(headers as Record<string, string> | undefined),
   };
-  if (auth) {
-    const token = getToken();
-    if (token) h.Authorization = `Bearer ${token}`;
-  }
 
   let res: Response;
   try {
@@ -41,16 +21,6 @@ export async function api<T>(
   const data = text ? safeJson(text) : null;
 
   if (!res.ok) {
-    if (auth && (res.status === 401 || res.status === 403)) {
-      setToken(null);
-      if (typeof window !== "undefined") {
-        localStorage.removeItem("slotes:session");
-        if (window.location.pathname !== "/login") {
-          window.location.replace("/login");
-        }
-      }
-      throw new Error("Sessão expirada. Faça login novamente.");
-    }
     const msg =
       (data && (data.message || data.error)) ||
       (typeof data === "string" ? data : null) ||

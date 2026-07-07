@@ -1,9 +1,8 @@
-import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { useEffect, useState, type ReactNode } from "react";
+import { Link, useRouterState } from "@tanstack/react-router";
+import type { ReactNode } from "react";
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -14,8 +13,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { LayoutDashboard, Package, Printer, Shield, LogOut } from "lucide-react";
-import { authService } from "@/lib/auth";
+import { LayoutDashboard, Package, Printer, Shield } from "lucide-react";
 
 const items = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
@@ -25,24 +23,7 @@ const items = [
 ] as const;
 
 export function AppShell({ children, title }: { children: ReactNode; title: string }) {
-  const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const [ready, setReady] = useState(false);
-
-  useEffect(() => {
-    if (!authService.isAuthenticated()) {
-      navigate({ to: "/login" });
-    } else {
-      setReady(true);
-    }
-  }, [navigate]);
-
-  if (!ready) return null;
-
-  function handleLogout() {
-    authService.logout();
-    navigate({ to: "/login" });
-  }
 
   return (
     <SidebarProvider>
@@ -75,16 +56,6 @@ export function AppShell({ children, title }: { children: ReactNode; title: stri
               </SidebarGroupContent>
             </SidebarGroup>
           </SidebarContent>
-          <SidebarFooter className="border-t">
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton onClick={handleLogout}>
-                  <LogOut />
-                  <span>Sair</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarFooter>
         </Sidebar>
 
         <div className="flex-1 flex flex-col min-w-0 print:block">

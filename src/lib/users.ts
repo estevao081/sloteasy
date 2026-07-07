@@ -11,7 +11,7 @@ export interface User {
 
 export const userService = {
   list(): Promise<User[]> {
-    return api<User[] | { content: User[] }>("/admin").then((res) => {
+    return api<User[] | { content: User[] }>("/admin/users").then((res) => {
       if (!res) return [];
       if (Array.isArray(res)) return res;
       if (Array.isArray((res as { content: User[] }).content)) {
@@ -21,18 +21,18 @@ export const userService = {
     });
   },
   create(u: { name: string; drt: string; password: string; role: UserRole }): Promise<User> {
-    return api<User>("/admin", {
+    return api<User>("/admin/users", {
       method: "POST",
       body: JSON.stringify(u),
     });
   },
   update(id: number, u: { name: string; drt: string; role: UserRole }): Promise<User> {
-    return api<User>(`/admin/${id}`, {
+    return api<User>(`/admin/users/${id}`, {
       method: "PUT",
       body: JSON.stringify(u),
     });
   },
   remove(id: number): Promise<void> {
-    return api<void>(`/admin/${id}`, { method: "DELETE" });
+    return api<void>(`/admin/users/${id}`, { method: "DELETE" });
   },
 };
