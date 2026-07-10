@@ -1,8 +1,9 @@
-import { Link, useRouterState } from "@tanstack/react-router";
-import type { ReactNode } from "react";
+import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
+import { useEffect, type ReactNode } from "react";
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -13,7 +14,9 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { LayoutDashboard, Package, Printer, Shield } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { LayoutDashboard, LogOut, Package, Printer, Shield } from "lucide-react";
+import { authService, isAuthenticated } from "@/lib/auth";
 
 const items = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
@@ -24,6 +27,18 @@ const items = [
 
 export function AppShell({ children, title }: { children: ReactNode; title: string }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!isAuthenticated()) {
+      navigate({ to: "/login" });
+    }
+  }, [navigate]);
+
+  function handleLogout() {
+    authService.logout();
+    navigate({ to: "/login" });
+  }
 
   return (
     <SidebarProvider>
@@ -56,6 +71,12 @@ export function AppShell({ children, title }: { children: ReactNode; title: stri
               </SidebarGroupContent>
             </SidebarGroup>
           </SidebarContent>
+          <SidebarFooter className="border-t">
+            <Button variant="ghost" className="w-full justify-start gap-2" onClick={handleLogout}>
+              <LogOut className="h-4 w-4" />
+              <span>Sair</span>
+            </Button>
+          </SidebarFooter>
         </Sidebar>
 
         <div className="flex-1 flex flex-col min-w-0 print:block">

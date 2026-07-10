@@ -1,10 +1,15 @@
+import { getToken, clearToken } from "./auth";
+
 export const API_BASE_URL =
   (import.meta.env.VITE_API_URL as string | undefined) ?? "https://sloteasy-api.onrender.com";
 
 export async function api<T>(path: string, options: RequestInit = {}): Promise<T> {
   const { headers, ...rest } = options;
+  const token = getToken();
+
   const h: Record<string, string> = {
     "Content-Type": "application/json",
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
     ...(headers as Record<string, string> | undefined),
   };
 
@@ -13,6 +18,13 @@ export async function api<T>(path: string, options: RequestInit = {}): Promise<T
     res = await fetch(`${API_BASE_URL}${path}`, { ...rest, headers: h });
   } catch {
     throw new Error(`Não foi possível conectar à API (${API_BASE_URL}).`);
+  }
+
+  if (res.status === 401) {
+    clearToken();
+    if (typeof window !== "undefined" && window.location.pathname !== "/login") {
+      window.location.href = "/login";
+    }
   }
 
   if (res.status === 204) return undefined as T;
