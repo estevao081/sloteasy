@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Slote, type SloteData } from "@/components/slote-preview";
 import { productService, type Product } from "@/lib/products";
+import { getCurrentUser } from "@/lib/auth";
 import { Printer } from "lucide-react";
 import { toast } from "sonner";
 
@@ -22,9 +23,9 @@ function formatDate(d: Date) {
   return `${dd}/${mm}/${yyyy}`;
 }
 
-function emptySlote(date: string): SloteData {
+function emptySlote(date: string, responsibleName = ""): SloteData {
   return {
-    responsibleName: "",
+    responsibleName,
     code: "",
     description: "",
     quantity: "",
