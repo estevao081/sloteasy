@@ -200,8 +200,8 @@
 }
 .slote-half .s-name {
   flex: 1;
-  font-size: 14pt;
-  font-weight: 700;
+  font-size: 17pt;
+  font-weight: 900;
   border-right: 1px solid #000;
   text-transform: uppercase;
 }
@@ -213,8 +213,8 @@
 }
 .slote-half .s-date {
   width: 32mm;
-  font-size: 10pt;
-  font-weight: 700;
+  font-size: 13pt;
+  font-weight: 900;
 }
 
 /* Linha de assinaturas */
@@ -360,8 +360,8 @@
 }
 .slote-full .s-name {
   flex: 1;
-  font-size: 22pt;
-  font-weight: 700;
+  font-size: 28pt;
+  font-weight: 900;
   border-right: 1px solid #000;
   text-transform: uppercase;
 }
@@ -373,8 +373,8 @@
 }
 .slote-full .s-date {
   width: 45mm;
-  font-size: 14pt;
-  font-weight: 700;
+  font-size: 18pt;
+  font-weight: 900;
 }
 
 /* Linha de assinaturas */
