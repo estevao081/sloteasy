@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Slote, type SloteData } from "@/components/slote-preview";
 import { productService, type Product } from "@/lib/products";
+import { getCurrentUser } from "@/lib/auth";
 import { Printer } from "lucide-react";
 import { toast } from "sonner";
 
@@ -22,9 +23,9 @@ function formatDate(d: Date) {
   return `${dd}/${mm}/${yyyy}`;
 }
 
-function emptySlote(date: string): SloteData {
+function emptySlote(date: string, responsibleName = ""): SloteData {
   return {
-    responsibleName: "",
+    responsibleName,
     code: "",
     description: "",
     quantity: "",
@@ -41,8 +42,12 @@ type SloteFieldErrors = {
 
 function PrintPage() {
   const today = useMemo(() => formatDate(new Date()), []);
+  const responsibleName = useMemo(() => getCurrentUser()?.name?.trim() || "", []);
   const [orientation, setOrientation] = useState<"portrait" | "landscape">("portrait");
-  const [slotes, setSlotes] = useState<SloteData[]>(() => [emptySlote(today), emptySlote(today)]);
+  const [slotes, setSlotes] = useState<SloteData[]>(() => [
+    emptySlote(today, responsibleName),
+    emptySlote(today, responsibleName),
+  ]);
   const [notFound, setNotFound] = useState<boolean[]>([false, false]);
   const [fieldErrors, setFieldErrors] = useState<SloteFieldErrors[]>([{}, {}]);
 
@@ -129,7 +134,7 @@ function PrintPage() {
   }
 
   function clearSlote(i: number) {
-    setSlotes((s) => s.map((v, idx) => (idx === i ? emptySlote(today) : v)));
+    setSlotes((s) => s.map((v, idx) => (idx === i ? emptySlote(today, responsibleName) : v)));
     setNotFound((n) => n.map((x, idx) => (idx === i ? false : x)));
     setFieldErrors((errs) => errs.map((e, idx) => (idx === i ? {} : e)));
   }
@@ -182,6 +187,7 @@ function PrintPage() {
                   data={s}
                   orientation={orientation}
                   editable
+                  lockResponsibleName
                   notFound={notFound[i]}
                   errors={fieldErrors[i]}
                   onChange={(patch) => update(i, patch)}
