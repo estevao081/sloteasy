@@ -13,6 +13,7 @@ interface Props {
   data: SloteData;
   orientation: "portrait" | "landscape";
   editable?: boolean;
+  lockResponsibleName?: boolean;
   onChange?: (patch: Partial<SloteData>) => void;
   onCodeCommit?: (code: string) => void;
   notFound?: boolean;
@@ -34,6 +35,7 @@ export function Slote({
   data,
   orientation,
   editable = false,
+  lockResponsibleName = false,
   onChange,
   onCodeCommit,
   notFound,

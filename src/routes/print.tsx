@@ -187,6 +187,7 @@ function PrintPage() {
                   data={s}
                   orientation={orientation}
                   editable
+                  lockResponsibleName
                   notFound={notFound[i]}
                   errors={fieldErrors[i]}
                   onChange={(patch) => update(i, patch)}
