@@ -42,8 +42,12 @@ type SloteFieldErrors = {
 
 function PrintPage() {
   const today = useMemo(() => formatDate(new Date()), []);
+  const responsibleName = useMemo(() => getCurrentUser()?.name?.trim() || "", []);
   const [orientation, setOrientation] = useState<"portrait" | "landscape">("portrait");
-  const [slotes, setSlotes] = useState<SloteData[]>(() => [emptySlote(today), emptySlote(today)]);
+  const [slotes, setSlotes] = useState<SloteData[]>(() => [
+    emptySlote(today, responsibleName),
+    emptySlote(today, responsibleName),
+  ]);
   const [notFound, setNotFound] = useState<boolean[]>([false, false]);
   const [fieldErrors, setFieldErrors] = useState<SloteFieldErrors[]>([{}, {}]);
 
@@ -130,7 +134,7 @@ function PrintPage() {
   }
 
   function clearSlote(i: number) {
-    setSlotes((s) => s.map((v, idx) => (idx === i ? emptySlote(today) : v)));
+    setSlotes((s) => s.map((v, idx) => (idx === i ? emptySlote(today, responsibleName) : v)));
     setNotFound((n) => n.map((x, idx) => (idx === i ? false : x)));
     setFieldErrors((errs) => errs.map((e, idx) => (idx === i ? {} : e)));
   }
