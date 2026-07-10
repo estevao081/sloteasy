@@ -60,7 +60,7 @@ export function Slote({
       {/* Cabeçalho: Nome, Data Label, Data */}
       <div className="s-header-row">
         <div className={`s-name${errors?.responsibleName ? " s-field-error" : ""}`}>
-          {editable ? (
+          {editable && !lockResponsibleName ? (
             <input
               className={"s-input" + editClass}
               value={data.responsibleName}
