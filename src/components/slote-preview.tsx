@@ -57,21 +57,19 @@ export function Slote({
 
   return (
     <div className={`slote ${sizeClass}${editable ? " slote-editable" : ""}`}>
-      {/* Cabeçalho: Nome, Data Label, Data */}
+      {/* Cabeçalho: Nome, Data */}
       <div className="s-header-row">
         <div className={`s-name${errors?.responsibleName ? " s-field-error" : ""}`}>
           {editable && !lockResponsibleName ? (
             <input
               className={"s-input" + editClass}
               value={data.responsibleName}
-              placeholder="Seu nome"
               onChange={(e) => onChange?.({ responsibleName: e.target.value })}
             />
           ) : (
             data.responsibleName || "\u00A0"
           )}
         </div>
-        <div className="s-date-label">DATA</div>
         <div className="s-date">{data.date}</div>
       </div>
 

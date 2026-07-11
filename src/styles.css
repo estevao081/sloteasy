@@ -210,10 +210,13 @@
 
 .slote-half .s-name {
   flex: 1;
-  font-size: 40pt;
+  min-width: 0;
+  font-size: 30pt;
+  line-height: 1.05;
   font-weight: 900;
   border-right: 1px solid #000;
   text-transform: uppercase;
+  overflow: hidden;
 }
 
 .slote-half .s-date-label {
@@ -224,9 +227,11 @@
 }
 
 .slote-half .s-date {
-  width: 42mm;
-  font-size: 30pt;
+  width: 52mm;
+  font-size: 22pt;
   font-weight: 900;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 /* Espaço em branco */
@@ -363,10 +368,13 @@
 
 .slote-full .s-name {
   flex: 1;
-  font-size: 60pt;
+  min-width: 0;
+  font-size: 42pt;
+  line-height: 1.05;
   font-weight: 900;
   border-right: 1px solid #000;
   text-transform: uppercase;
+  overflow: hidden;
 }
 
 .slote-full .s-date-label {
@@ -377,9 +385,11 @@
 }
 
 .slote-full .s-date {
-  width: 58mm;
-  font-size: 40pt;
+  width: 72mm;
+  font-size: 30pt;
   font-weight: 900;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 /* Espaço em branco */
