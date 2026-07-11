@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { AppShell } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
@@ -35,10 +35,7 @@ import { getCurrentUser } from "@/lib/auth";
 export const Route = createFileRoute("/admin")({
   beforeLoad: () => {
     if (getCurrentUser()?.role !== "ADMIN") {
-      throw new Response(null, {
-        status: 302,
-        headers: { Location: "/dashboard" },
-      });
+      throw redirect({ to: "/dashboard" });
     }
   },
   head: () => ({ meta: [{ title: "Administração — Sistema de Slotes" }] }),

@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,10 +11,7 @@ import { authService, isAuthenticated } from "@/lib/auth";
 export const Route = createFileRoute("/login")({
   beforeLoad: () => {
     if (isAuthenticated()) {
-      throw new Response(null, {
-        status: 302,
-        headers: { Location: "/dashboard" },
-      });
+      throw redirect({ to: "/dashboard" });
     }
   },
   component: LoginPage,
