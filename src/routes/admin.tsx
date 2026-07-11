@@ -30,8 +30,17 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Pencil, Trash2, Search } from "lucide-react";
 import { userService, type User, type UserRole } from "@/lib/users";
+import { getCurrentUser } from "@/lib/auth";
 
 export const Route = createFileRoute("/admin")({
+  beforeLoad: () => {
+    if (getCurrentUser()?.role !== "ADMIN") {
+      throw new Response(null, {
+        status: 302,
+        headers: { Location: "/dashboard" },
+      });
+    }
+  },
   head: () => ({ meta: [{ title: "Administração — Sistema de Slotes" }] }),
   component: AdminPage,
 });

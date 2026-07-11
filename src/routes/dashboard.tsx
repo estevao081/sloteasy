@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { AppShell } from "@/components/app-shell";
 import { Card, CardContent } from "@/components/ui/card";
-import { Package, Printer } from "lucide-react";
+import { Package, Printer, Shield } from "lucide-react";
+import { getCurrentUser } from "@/lib/auth";
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({ meta: [{ title: "Dashboard — Sistema de Slotes" }] }),
@@ -9,6 +10,8 @@ export const Route = createFileRoute("/dashboard")({
 });
 
 function DashboardPage() {
+  const isAdmin = getCurrentUser()?.role === "ADMIN";
+
   return (
     <AppShell title="Dashboard">
       <div className="grid gap-6 sm:grid-cols-2 max-w-3xl">
@@ -30,6 +33,17 @@ function DashboardPage() {
             </CardContent>
           </Card>
         </Link>
+        {isAdmin && (
+          <Link to="/admin">
+            <Card className="hover:border-primary hover:shadow-md transition cursor-pointer h-full">
+              <CardContent className="p-8 flex flex-col items-center text-center gap-3">
+                <Shield className="h-12 w-12 text-primary" />
+                <h2 className="text-lg font-semibold">Administração</h2>
+                <p className="text-sm text-muted-foreground">Gerencie usuários do sistema</p>
+              </CardContent>
+            </Card>
+          </Link>
+        )}
       </div>
     </AppShell>
   );

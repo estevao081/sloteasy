@@ -16,19 +16,21 @@ import {
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { LayoutDashboard, LogOut, Package, Printer, Shield } from "lucide-react";
-import { authService, getToken, isTokenExpired, getTokenExpiresAt } from "@/lib/auth";
+import { authService, getToken, isTokenExpired, getTokenExpiresAt, getCurrentUser } from "@/lib/auth";
 import { toast } from "sonner";
 
 const items = [
-  { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
-  { title: "Produtos", url: "/products", icon: Package },
-  { title: "Impressão", url: "/print", icon: Printer },
-  { title: "Administração", url: "/admin", icon: Shield },
+  { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard, adminOnly: false },
+  { title: "Produtos", url: "/products", icon: Package, adminOnly: false },
+  { title: "Impressão", url: "/print", icon: Printer, adminOnly: false },
+  { title: "Administração", url: "/admin", icon: Shield, adminOnly: true },
 ] as const;
 
 export function AppShell({ children, title }: { children: ReactNode; title: string }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const navigate = useNavigate();
+  const isAdmin = getCurrentUser()?.role === "ADMIN";
+  const visibleItems = items.filter((item) => !item.adminOnly || isAdmin);
 
   useEffect(() => {
     function goToLogin(expired: boolean) {
@@ -49,9 +51,6 @@ export function AppShell({ children, title }: { children: ReactNode; title: stri
       return;
     }
 
-    // Agenda o redirecionamento automático para o exato instante em que o
-    // token expirar, mesmo que o usuário não faça nenhuma ação nem chamada
-    // de API nesse meio tempo.
     const expiresAt = getTokenExpiresAt(token);
     if (expiresAt === null) return;
 
@@ -82,7 +81,7 @@ export function AppShell({ children, title }: { children: ReactNode; title: stri
               <SidebarGroupLabel>Menu</SidebarGroupLabel>
               <SidebarGroupContent>
                 <SidebarMenu>
-                  {items.map((item) => (
+                  {visibleItems.map((item) => (
                     <SidebarMenuItem key={item.url}>
                       <SidebarMenuButton asChild isActive={pathname === item.url}>
                         <Link to={item.url}>
