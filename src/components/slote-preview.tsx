@@ -75,16 +75,6 @@ export function Slote({
         <div className="s-date">{data.date}</div>
       </div>
 
-      {/* Linha de assinaturas */}
-      <div className="s-signature-row">
-        <div className="s-signature">
-          <span className="s-sigcaption">Assinatura</span>
-        </div>
-        <div className="s-signature s-signature-right">
-          <span className="s-sigcaption">Nome do empilhador</span>
-        </div>
-      </div>
-
       {/* Espaço em branco */}
       <div className="s-blank">&nbsp;</div>
 
@@ -116,12 +106,11 @@ export function Slote({
       <div className="s-values-row">
         <div className="s-description">
           {editable ? (
-            <textarea
+            <input
               className={"s-input s-desc-input" + editClass}
               value={data.description}
               placeholder="—"
               readOnly
-              rows={2}
             />
           ) : (
             data.description || "\u00A0"
