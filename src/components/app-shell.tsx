@@ -16,7 +16,8 @@ import {
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { LayoutDashboard, LogOut, Package, Printer, Shield } from "lucide-react";
-import { authService, isAuthenticated } from "@/lib/auth";
+import { authService, getToken, isTokenExpired, getTokenExpiresAt } from "@/lib/auth";
+import { toast } from "sonner";
 
 const items = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
@@ -30,9 +31,33 @@ export function AppShell({ children, title }: { children: ReactNode; title: stri
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!isAuthenticated()) {
+    function goToLogin(expired: boolean) {
+      authService.logout();
+      if (expired) {
+        toast.error("Sua sessão expirou. Faça login novamente.");
+      }
       navigate({ to: "/login" });
     }
+
+    const token = getToken();
+    if (!token) {
+      goToLogin(false);
+      return;
+    }
+    if (isTokenExpired(token)) {
+      goToLogin(true);
+      return;
+    }
+
+    // Agenda o redirecionamento automático para o exato instante em que o
+    // token expirar, mesmo que o usuário não faça nenhuma ação nem chamada
+    // de API nesse meio tempo.
+    const expiresAt = getTokenExpiresAt(token);
+    if (expiresAt === null) return;
+
+    const msUntilExpiry = expiresAt - Date.now();
+    const timer = window.setTimeout(() => goToLogin(true), msUntilExpiry);
+    return () => window.clearTimeout(timer);
   }, [navigate]);
 
   function handleLogout() {

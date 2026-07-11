@@ -23,10 +23,6 @@ export function clearToken(): void {
   window.localStorage.removeItem(USER_KEY);
 }
 
-export function isAuthenticated(): boolean {
-  return !!getToken();
-}
-
 function decodeJwt(token: string): Record<string, unknown> | null {
   try {
     const part = token.split(".")[1];
@@ -38,6 +34,31 @@ function decodeJwt(token: string): Record<string, unknown> | null {
   } catch {
     return null;
   }
+}
+
+/** Timestamp (ms) em que o token expira, ou null se não houver claim `exp`. */
+export function getTokenExpiresAt(token?: string | null): number | null {
+  const t = token ?? getToken();
+  if (!t) return null;
+  const p = decodeJwt(t);
+  const exp = p?.exp;
+  return typeof exp === "number" ? exp * 1000 : null;
+}
+
+export function isTokenExpired(token?: string | null): boolean {
+  const expiresAt = getTokenExpiresAt(token);
+  if (expiresAt === null) return false; // sem claim `exp`: não temos como saber, não força logout
+  return Date.now() >= expiresAt;
+}
+
+export function isAuthenticated(): boolean {
+  const t = getToken();
+  if (!t) return false;
+  if (isTokenExpired(t)) {
+    clearToken();
+    return false;
+  }
+  return true;
 }
 
 function extractUser(token: string): CurrentUser {
@@ -55,7 +76,12 @@ export function getCurrentUser(): CurrentUser | null {
   const raw = window.localStorage.getItem(USER_KEY);
   if (raw) {
     try {
-      return JSON.parse(raw) as CurrentUser;
+      const cached = JSON.parse(raw) as CurrentUser;
+      // Se o cache já tem nome, confiamos nele. Se não tem (por exemplo,
+      // foi gravado antes da API retornar o nome, ou o token na época não
+      // trazia a claim), tentamos derivar de novo em vez de ficar preso
+      // permanentemente num valor em branco.
+      if (cached.name?.trim()) return cached;
     } catch {
       /* ignore */
     }
