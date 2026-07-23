@@ -1,7 +1,7 @@
 import { getToken, clearToken } from "./auth";
 
 export const API_BASE_URL =
-  (import.meta.env.VITE_API_URL as string | undefined) ?? "http://localhost:8090";
+  (import.meta.env.VITE_API_URL as string | undefined) ?? "https://sloteasy-api.onrender.com";
 
 export async function api<T>(path: string, options: RequestInit = {}): Promise<T> {
   const { headers, ...rest } = options;
