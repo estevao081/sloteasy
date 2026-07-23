@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Printer } from "lucide-react";
 import { authService, isAuthenticated } from "@/lib/auth";
+import { AppFooter } from "@/components/app-footer";
 
 export const Route = createFileRoute("/login")({
   beforeLoad: () => {
@@ -39,7 +40,7 @@ function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-muted/20 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-muted/20 px-4 pb-28">
       <Card className="w-full max-w-sm">
         <CardHeader className="text-center">
           <div className="mx-auto h-10 w-10 rounded bg-primary text-primary-foreground flex items-center justify-center mb-2">
@@ -58,7 +59,7 @@ function LoginPage() {
             <div className="space-y-2">
               <Label htmlFor="drt">Matrícula (ID ou DRT)</Label>
               <Input
-              placeholder="Ex: 445030"
+                placeholder="Ex: 445030"
                 id="drt"
                 value={drt}
                 onChange={(e) => setDrt(e.target.value)}
@@ -83,6 +84,7 @@ function LoginPage() {
           </form>
         </CardContent>
       </Card>
+      <AppFooter />
     </div>
   );
 }

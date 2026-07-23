@@ -144,11 +144,106 @@
   }
 }
 
+/* ============ APP FOOTER ============ */
+/* Rodapé cinza fixo ao final do conteúdo, presente em todas as páginas
+   do sistema (não aparece na impressão — ver .no-print). */
+.app-footer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 5;
+  background-color: #e5e5e5;
+  border-top: 1px solid #d4d4d4;
+  padding: 10px 16px 14px;
+  text-align: center;
+}
+
+.app-footer-line {
+  font-size: 13px;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 6px;
+}
+
+.app-footer-social {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 18px;
+}
+
+.app-footer-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #4d4d4d;
+  text-decoration: none;
+}
+
+.app-footer-link:hover {
+  color: #111;
+  text-decoration: underline;
+}
+
 /* ============ SLOTE ============ */
+.preview-area {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 10mm;
+}
+
+/* Bloco de cada folha na tela: rótulo da folha + folha em si + ações
+   ("Limpar slote X"). Cada folha impressa vira uma página física própria. */
+.print-page-block {
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 auto;
+  gap: 2mm;
+}
+
+.page-block-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.page-block-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-muted-foreground, #666);
+}
+
+.page-block-empty-tag {
+  font-weight: 400;
+  font-style: italic;
+}
+
+.page-block-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
 .print-scale {
   display: flex;
   justify-content: center;
-  overflow: auto;
+  overflow: visible;
+}
+
+.print-portrait .print-scale {
+  width: 105mm; /* metade de 210mm, compensa o transform: scale(0.5) abaixo */
+  height: 148.5mm; /* metade de 297mm */
+}
+
+.print-landscape .print-scale {
+  width: 148.5mm; /* metade de 297mm */
+  height: 105mm; /* metade de 210mm */
 }
 
 .print-sheet {
@@ -516,58 +611,17 @@
   background: repeating-linear-gradient(90deg, #fff 0, #fff 3.5mm, #000 3.5mm, #000 5.5mm);
 }
 
-/* ==== screen responsiveness (14"-19" displays) ==== */
+/* ==== visualização na tela reduzida à metade (impressão real não muda) ==== */
 .print-sheet {
+  transform: scale(0.5);
   transform-origin: top center;
-}
-
-@media screen and (max-width: 1700px) {
-  .print-landscape .print-sheet {
-    transform: scale(0.75);
-    margin-bottom: -55mm;
-  }
-}
-
-@media screen and (max-width: 1500px) {
-  .print-portrait .print-sheet {
-    transform: scale(0.85);
-    margin-bottom: -45mm;
-  }
-
-  .print-landscape .print-sheet {
-    transform: scale(0.65);
-    margin-bottom: -75mm;
-  }
-}
-
-@media screen and (max-width: 1280px) {
-  .print-portrait .print-sheet {
-    transform: scale(0.7);
-    margin-bottom: -90mm;
-  }
-
-  .print-landscape .print-sheet {
-    transform: scale(0.55);
-    margin-bottom: -95mm;
-  }
-}
-
-@media screen and (max-width: 1024px) {
-  .print-portrait .print-sheet {
-    transform: scale(0.55);
-    margin-bottom: -135mm;
-  }
-
-  .print-landscape .print-sheet {
-    transform: scale(0.45);
-    margin-bottom: -115mm;
-  }
 }
 
 /* ==== inline editable inputs ==== */
 .s-input {
   width: 100%;
   height: 100%;
+  box-sizing: border-box;
   border: 0;
   background: transparent;
   text-align: center;
@@ -581,17 +635,62 @@
   font-weight: inherit;
 }
 
+/* Na tela, os campos editáveis ganham a aparência de um input de verdade
+   (borda, cantos arredondados, destaque de foco) — o mesmo padrão visual
+   do campo usado no cadastro de produtos. Isso é só para facilitar o
+   preenchimento: na impressão essa borda some (ver @media print) e o
+   slote sai exatamente como sempre saiu. */
 .slote-editable .s-input {
-  background: rgba(255, 235, 130, 0.18);
-  transition: background 0.15s;
+  border: 1.5px solid #c7c7c7;
+  border-radius: 6px;
+  background: #fff;
+  padding: 0 2px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
 }
 
 .slote-editable .s-input:hover {
-  background: rgba(255, 235, 130, 0.35);
+  border-color: #999;
 }
 
 .slote-editable .s-input:focus {
-  background: rgba(255, 235, 130, 0.55);
+  border-color: #6b7280;
+  box-shadow: 0 0 0 3px rgba(107, 114, 128, 0.15);
+  background: #fffdf4;
+}
+
+/* Descrição é sempre somente leitura (preenchida automaticamente pela
+   busca do código) — visual de campo "travado", diferenciando-a dos
+   campos digitáveis. */
+.slote-editable .s-input[readonly] {
+  border-style: dashed;
+  border-color: #d4d4d4;
+  background: #fafafa;
+  color: #555;
+  cursor: default;
+  box-shadow: none;
+}
+
+.slote-editable .s-input[readonly]:hover {
+  border-color: #d4d4d4;
+}
+
+/* Rótulo "CÓDIGO", visível apenas na tela para orientar o preenchimento
+   (o layout impresso não tinha esse rótulo e continua sem ele). */
+.s-code-label {
+  display: none;
+  position: absolute;
+  top: 1mm;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 8pt;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: #4d4d4d;
+}
+
+.slote-editable .s-code-label {
+  display: block;
 }
 
 .s-code-input {
@@ -717,6 +816,141 @@ input[type="date"].s-val-input {
   overflow: hidden;
 }
 
+/* ============ PRÉ-CONTAGEM ============ */
+/*
+ * Modelo opcional impresso junto com os slotes: uma folha de conferência
+ * com código e quantidade puxados automaticamente do(s) slote(s)
+ * preenchido(s), e "Pré Contado Por" preenchido com o usuário logado.
+ * Reaproveita o dimensionamento físico de .print-sheet (mesma A4).
+ */
+.precount-content {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  font-family: Georgia, "Times New Roman", Times, serif;
+  color: #000;
+}
+
+/* ---- vertical: tabela código/quantidade, 6 linhas ---- */
+.precount-table {
+  width: 100%;
+  flex: 1 1 auto;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.precount-table col.precount-col-codigo,
+.precount-table col.precount-col-qtd {
+  width: 50%;
+}
+
+.precount-table th {
+  font-size: 16pt;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  padding: 6px 6px 10px 6px;
+  border-bottom: 1px dotted #000;
+}
+
+.precount-table th:first-child {
+  border-right: 1px dotted #000;
+}
+
+.precount-table td {
+  font-size: 40pt;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  text-align: center;
+  padding: 6px;
+  border-bottom: 1px dotted #000;
+}
+
+.precount-table td.precount-codigo {
+  border-right: 1px dotted #000;
+}
+
+/* ---- horizontal: código interno + quantidade em destaque, com pente ---- */
+.precount-landscape {
+  justify-content: flex-start;
+}
+
+.precount-comb {
+  display: flex;
+  width: 100%;
+  flex: 0 0 auto;
+}
+
+.precount-comb .precount-box {
+  flex: 1 1 0;
+  height: 6mm;
+  border-right: 1px dotted #000;
+  border-bottom: 1px dotted #000;
+}
+
+.precount-comb .precount-box:last-child {
+  border-right: none;
+}
+
+.precount-section-label {
+  text-align: center;
+  font-size: 15pt;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  padding: 4px 0;
+  border-bottom: 1px dotted #000;
+  flex: 0 0 auto;
+}
+
+.precount-big-value {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px dotted #000;
+  font-size: 84pt;
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+
+.precount-big-qty {
+  flex: 0 0 34mm;
+  font-size: 70pt;
+}
+
+/* ---- rodapé comum (Pré Contado Por / Revisado Por) ---- */
+.precount-footer {
+  display: flex;
+  border-top: 1px dotted #000;
+  flex: 0 0 auto;
+}
+
+.precount-signature {
+  flex: 1 1 50%;
+  padding: 6px 10px;
+  min-height: 20mm;
+}
+
+.precount-signature:first-child {
+  border-right: 1px dotted #000;
+}
+
+.precount-label {
+  font-size: 11pt;
+  font-weight: 700;
+  text-align: center;
+}
+
+.precount-value {
+  font-size: 12pt;
+  font-weight: 700;
+  text-align: center;
+  margin-top: 4mm;
+}
+
 /* ============ PRINT ============ */
 @media print {
   @page {
@@ -763,6 +997,8 @@ input[type="date"].s-val-input {
   .print-scale {
     overflow: visible !important;
     display: block !important;
+    width: auto !important;
+    height: auto !important;
     margin: 0 !important;
     padding: 0 !important;
   }
@@ -775,8 +1011,25 @@ input[type="date"].s-val-input {
     box-shadow: none !important;
     overflow: hidden !important;
     page-break-inside: avoid !important;
-    page-break-after: avoid !important;
     page-break-before: avoid !important;
+  }
+
+  /* Folha sem nenhum campo preenchido: não gera página impressa. */
+  .print-sheet-empty {
+    display: none !important;
+  }
+
+  /* Força quebra de página após cada folha preenchida, exceto a última
+     a ser impressa (evita uma página em branco extra no final). */
+  .print-sheet-break {
+    page-break-after: always !important;
+    break-after: page !important;
+  }
+
+  .print-page-block {
+    page-break-inside: avoid !important;
+    margin: 0 !important;
+    gap: 0 !important;
   }
 
   .slote {
@@ -796,6 +1049,29 @@ input[type="date"].s-val-input {
 
   .slote-editable .s-input {
     background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+  }
+
+  .s-code-label {
+    display: none !important;
+  }
+
+  /* Garante que o tamanho ampliado do código/quantidade da pré-contagem
+     realmente saia assim na impressão, sem depender de nenhuma regra de
+     tela que porventura tenha precedência. */
+  .precount-table td {
+    font-size: 40pt !important;
+  }
+
+  .precount-big-value {
+    font-size: 84pt !important;
+  }
+
+  .precount-big-qty {
+    font-size: 70pt !important;
   }
 
   .s-notfound {

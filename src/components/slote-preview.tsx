@@ -78,6 +78,7 @@ export function Slote({
 
       {/* Código */}
       <div className={`s-code-container${errors?.code ? " s-field-error" : ""}`}>
+        {editable && <div className="s-code-label">CÓDIGO</div>}
         {editable ? (
           <input
             ref={codeRef}

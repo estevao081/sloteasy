@@ -15,8 +15,15 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
+import { AppFooter } from "@/components/app-footer";
 import { LayoutDashboard, LogOut, Package, Printer, Shield } from "lucide-react";
-import { authService, getToken, isTokenExpired, getTokenExpiresAt, getCurrentUser } from "@/lib/auth";
+import {
+  authService,
+  getToken,
+  isTokenExpired,
+  getTokenExpiresAt,
+  getCurrentUser,
+} from "@/lib/auth";
 import { toast } from "sonner";
 
 const items = [
@@ -65,52 +72,55 @@ export function AppShell({ children, title }: { children: ReactNode; title: stri
   }
 
   return (
-    <SidebarProvider>
-      <div className="min-h-screen flex w-full bg-muted/20 print:block print:min-h-0">
-        <Sidebar collapsible="icon" className="no-print">
-          <SidebarHeader className="border-b">
-            <div className="flex items-center gap-2 px-2 py-1.5">
-              <div className="h-8 w-8 rounded bg-primary text-primary-foreground flex items-center justify-center">
-                <Printer className="h-4 w-4" />
+    <>
+      <SidebarProvider>
+        <div className="min-h-screen flex w-full bg-muted/20 print:block print:min-h-0">
+          <Sidebar collapsible="icon" className="no-print">
+            <SidebarHeader className="border-b">
+              <div className="flex items-center gap-2 px-2 py-1.5">
+                <div className="h-8 w-8 rounded bg-primary text-primary-foreground flex items-center justify-center">
+                  <Printer className="h-4 w-4" />
+                </div>
+                <span className="font-semibold text-sm">Slotes</span>
               </div>
-              <span className="font-semibold text-sm">Slotes</span>
-            </div>
-          </SidebarHeader>
-          <SidebarContent>
-            <SidebarGroup>
-              <SidebarGroupLabel>Menu</SidebarGroupLabel>
-              <SidebarGroupContent>
-                <SidebarMenu>
-                  {visibleItems.map((item) => (
-                    <SidebarMenuItem key={item.url}>
-                      <SidebarMenuButton asChild isActive={pathname === item.url}>
-                        <Link to={item.url}>
-                          <item.icon />
-                          <span>{item.title}</span>
-                        </Link>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  ))}
-                </SidebarMenu>
-              </SidebarGroupContent>
-            </SidebarGroup>
-          </SidebarContent>
-          <SidebarFooter className="border-t">
-            <Button variant="ghost" className="w-full justify-start gap-2" onClick={handleLogout}>
-              <LogOut className="h-4 w-4" />
-              <span>Sair</span>
-            </Button>
-          </SidebarFooter>
-        </Sidebar>
+            </SidebarHeader>
+            <SidebarContent>
+              <SidebarGroup>
+                <SidebarGroupLabel>Menu</SidebarGroupLabel>
+                <SidebarGroupContent>
+                  <SidebarMenu>
+                    {visibleItems.map((item) => (
+                      <SidebarMenuItem key={item.url}>
+                        <SidebarMenuButton asChild isActive={pathname === item.url}>
+                          <Link to={item.url}>
+                            <item.icon />
+                            <span>{item.title}</span>
+                          </Link>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    ))}
+                  </SidebarMenu>
+                </SidebarGroupContent>
+              </SidebarGroup>
+            </SidebarContent>
+            <SidebarFooter className="border-t">
+              <Button variant="ghost" className="w-full justify-start gap-2" onClick={handleLogout}>
+                <LogOut className="h-4 w-4" />
+                <span>Sair</span>
+              </Button>
+            </SidebarFooter>
+          </Sidebar>
 
-        <div className="flex-1 flex flex-col min-w-0 print:block">
-          <header className="no-print h-14 flex items-center gap-3 border-b bg-background px-4">
-            <SidebarTrigger />
-            <h1 className="font-semibold text-base">{title}</h1>
-          </header>
-          <main className="flex-1 p-6 print:p-0 print:m-0">{children}</main>
+          <div className="flex-1 flex flex-col min-w-0 print:block">
+            <header className="no-print h-14 flex items-center gap-3 border-b bg-background px-4">
+              <SidebarTrigger />
+              <h1 className="font-semibold text-base">{title}</h1>
+            </header>
+            <main className="flex-1 p-6 pb-28 print:p-0 print:m-0">{children}</main>
+          </div>
         </div>
-      </div>
-    </SidebarProvider>
+      </SidebarProvider>
+      <AppFooter />
+    </>
   );
 }
