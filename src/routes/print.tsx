@@ -253,11 +253,9 @@ function PrintPage() {
               </label>
             </div>
             <div className="text-xs text-muted-foreground max-w-xs">
-              Clique dentro dos campos do slote para editar. Digite o código (6 números) ou o nome
-              do produto — a descrição e o código são preenchidos automaticamente pela busca.
+              Clique dentro dos campos do slote para editar. Digite o código (6 números) — a descrição e o código são preenchidos automaticamente pela busca.
               Somente as folhas com algum campo preenchido são impressas. Se marcar a pré-contagem,
-              o código e a quantidade são puxados automaticamente do(s) slote(s) preenchido(s) e
-              "Pré Contado Por" já sai com o seu nome.
+              o código e a quantidade são puxados automaticamente dos slotes preenchidos.
             </div>
             <div className="ml-auto flex flex-wrap gap-2">
               {isPortrait && (

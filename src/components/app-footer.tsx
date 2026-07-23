@@ -4,7 +4,6 @@ const socialLinks = [
   { title: "LinkedIn", url: "https://www.linkedin.com/in/estevaodev/", icon: Linkedin },
   { title: "GitHub", url: "https://github.com/estevao081", icon: Github },
   { title: "Portfólio", url: "https://estvdev.netlify.app/", icon: Globe },
-  { title: "WhatsApp", url: "https://wa.me/5581985947351", icon: MessageCircle },
 ] as const;
 
 // Rodapé fixo na tela (posição fixa), presente em todas as páginas do
