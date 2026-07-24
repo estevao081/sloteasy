@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { AlertTriangle } from "lucide-react";
 
 interface SloteData {
   code: string;
@@ -77,7 +78,7 @@ export function Slote({
       <div className="s-blank">&nbsp;</div>
 
       {/* Código */}
-      <div className={`s-code-container${errors?.code ? " s-field-error" : ""}`}>
+      <div className={`s-code-container${errors?.code || notFound ? " s-field-error" : ""}`}>
         {editable && <div className="s-code-label">CÓDIGO</div>}
         {editable ? (
           <input
@@ -91,7 +92,10 @@ export function Slote({
           data.code || "------"
         )}
         {editable && notFound && (
-          <div className="s-notfound">Produto não encontrado</div>
+          <div className="s-notfound">
+            <AlertTriangle />
+            Produto não encontrado
+          </div>
         )}
       </div>
 
@@ -122,9 +126,7 @@ export function Slote({
               value={data.quantity}
               placeholder="0"
               inputMode="numeric"
-              onChange={(e) =>
-                onChange?.({ quantity: e.target.value.replace(/[^0-9]/g, "") })
-              }
+              onChange={(e) => onChange?.({ quantity: e.target.value.replace(/[^0-9]/g, "") })}
             />
           ) : (
             data.quantity || "0"

@@ -777,11 +777,39 @@ textarea.s-desc-input {
 }
 
 .s-notfound {
-  position: absolute;
-  font-size: 8pt;
-  color: #b00020;
-  font-weight: 700;
-  margin-top: -2mm;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5mm;
+  width: 100%;
+  margin-top: 1.5mm;
+  padding: 1.5mm 2mm;
+  background: #b00020;
+  color: #fff;
+  font-size: 11pt;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  border-radius: 2px;
+  animation: s-notfound-pulse 1.2s ease-in-out infinite;
+}
+
+.s-notfound svg {
+  width: 4mm;
+  height: 4mm;
+  flex-shrink: 0;
+}
+
+@keyframes s-notfound-pulse {
+
+  0%,
+  100% {
+    background: #b00020;
+  }
+
+  50% {
+    background: #e0293f;
+  }
 }
 
 /* Destaque de campo obrigatório não preenchido (nome, código, quantidade) */

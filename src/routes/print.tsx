@@ -11,6 +11,7 @@ import { PreCountSheet, type PreCountRow } from "@/components/pre-count-preview"
 import { productService, type Product } from "@/lib/products";
 import { getCurrentUser } from "@/lib/auth";
 import { Plus, Printer, Trash2 } from "lucide-react";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/print")({
   head: () => ({ meta: [{ title: "Impressão — Sistema de Slotes" }] }),
@@ -43,9 +44,15 @@ function chunk<T>(arr: T[], size: number): T[][] {
 
 // Uma folha só é considerada "preenchida" (e, portanto, enviada para a
 // impressora) se pelo menos um dos slotes que ela contém tiver algum
-// campo digitado pelo usuário.
+// campo digitado pelo usuário. Usamos "?? \"\"" como blindagem: se por
+// algum motivo um campo vier undefined/null (ex.: resposta inesperada da
+// API), isso nunca deve derrubar a tela com um erro de runtime.
 function isSloteFilled(s: SloteData) {
-  return s.code.trim() !== "" || s.quantity.trim() !== "" || s.validity.trim() !== "";
+  return (
+    (s.code ?? "").trim() !== "" ||
+    (s.quantity ?? "").trim() !== "" ||
+    (s.validity ?? "").trim() !== ""
+  );
 }
 
 type SloteFieldErrors = {
@@ -105,6 +112,28 @@ function PrintPage() {
   // buscamos por código; qualquer outra coisa, buscamos por nome.
   const CODE_PATTERN = /^\d{6}$/;
   const searchCache = useRef<Record<string, Product | null>>({});
+
+  // A busca por nome é um endpoint de "contém" e pode devolver uma lista
+  // (às vezes vazia) em vez de um produto único — mesmo com "0 resultados",
+  // uma lista vazia [] é "truthy" em JS. Sem essa normalização, o código
+  // tratava qualquer lista como "produto encontrado" e tentava usar
+  // campos que não existem em um array, corrompendo o slote com
+  // código/descrição undefined e quebrando a tela mais adiante. Aqui
+  // validamos o formato antes de confiar na resposta.
+  function normalizeProduct(raw: unknown): Product | null {
+    if (!raw) return null;
+    if (Array.isArray(raw)) {
+      return raw.length > 0 ? normalizeProduct(raw[0]) : null;
+    }
+    if (typeof raw === "object") {
+      const r = raw as Partial<Product>;
+      if (typeof r.code === "string" && typeof r.name === "string") {
+        return { ...r, code: r.code, name: r.name };
+      }
+    }
+    return null;
+  }
+
   async function lookup(i: number, value: string) {
     const v = value.trim();
     if (!v) {
@@ -117,7 +146,8 @@ function PrintPage() {
     try {
       let product = searchCache.current[cacheKey];
       if (product === undefined) {
-        product = byCode ? await productService.getByCode(v) : await productService.getByName(v);
+        const raw = byCode ? await productService.getByCode(v) : await productService.getByName(v);
+        product = normalizeProduct(raw);
         searchCache.current[cacheKey] = product;
       }
       if (product) {
@@ -128,10 +158,16 @@ function PrintPage() {
       } else {
         update(i, { description: "" });
         setNotFound((n) => n.map((x, idx) => (idx === i ? true : x)));
+        toast.error(`Produto não encontrado para "${v}"`, {
+          description: "Confira o código (6 números) ou o nome do produto e tente novamente.",
+        });
       }
     } catch {
       update(i, { description: "" });
       setNotFound((n) => n.map((x, idx) => (idx === i ? true : x)));
+      toast.error(`Produto não encontrado para "${v}"`, {
+        description: "Confira o código (6 números) ou o nome do produto e tente novamente.",
+      });
     }
   }
 
@@ -198,7 +234,7 @@ function PrintPage() {
   const preCountSource: PreCountRow[] = pages
     .flatMap((page, p) => (printable[p] ? page : []))
     .filter(isSloteFilled)
-    .map((s) => ({ code: s.code, quantity: s.quantity }));
+    .map((s) => ({ code: s.code ?? "", quantity: s.quantity ?? "" }));
 
   const preCountPages: PreCountRow[][] =
     printPreCount && preCountSource.length > 0
@@ -253,9 +289,11 @@ function PrintPage() {
               </label>
             </div>
             <div className="text-xs text-muted-foreground max-w-xs">
-              Clique dentro dos campos do slote para editar. Digite o código (6 números) — a descrição e o código são preenchidos automaticamente pela busca.
+              Clique dentro dos campos do slote para editar. Digite o código (6 números) ou o nome
+              do produto — a descrição e o código são preenchidos automaticamente pela busca.
               Somente as folhas com algum campo preenchido são impressas. Se marcar a pré-contagem,
-              o código e a quantidade são puxados automaticamente dos slotes preenchidos.
+              o código e a quantidade são puxados automaticamente do(s) slote(s) preenchido(s) e
+              "Pré Contado Por" já sai com o seu nome.
             </div>
             <div className="ml-auto flex flex-wrap gap-2">
               {isPortrait && (
