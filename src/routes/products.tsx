@@ -13,6 +13,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Pencil, Trash2, Search, ChevronLeft, ChevronRight } from "lucide-react";
 import { productService, type Product } from "@/lib/products";
 
@@ -24,15 +31,26 @@ export const Route = createFileRoute("/products")({
 function ProductsPage() {
   const [items, setItems] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const [code, setCode] = useState("");
-  const [name, setName] = useState("");
-  const [editingId, setEditingId] = useState<number | null>(null);
   const [search, setSearch] = useState("");
   const [searchResults, setSearchResults] = useState<Product[] | null>(null);
   const [searching, setSearching] = useState(false);
   const [searchError, setSearchError] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  
+
+  // Cadastro de novo produto
+  const [newCode, setNewCode] = useState("");
+  const [newName, setNewName] = useState("");
+  const [creating, setCreating] = useState(false);
+  const [createError, setCreateError] = useState<string | null>(null);
+
+  // Edição de produto: abre um modal próprio (mesmo padrão da edição de
+  // usuário em /admin), em vez de reaproveitar o formulário de cadastro.
+  const [editing, setEditing] = useState<Product | null>(null);
+  const [editCode, setEditCode] = useState("");
+  const [editName, setEditName] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [editError, setEditError] = useState<string | null>(null);
+
   // Paginação
   const [currentPage, setCurrentPage] = useState(0);
   const [totalElements, setTotalElements] = useState(0);
@@ -104,34 +122,43 @@ function ProductsPage() {
   const isSearchMode = searchResults !== null;
   const displayed = isSearchMode ? searchResults : items;
 
-  function reset() {
-    setCode("");
-    setName("");
-    setEditingId(null);
-    setError(null);
-  }
-
-  async function onSubmit(e: React.FormEvent) {
+  async function onCreate(e: React.FormEvent) {
     e.preventDefault();
-    setError(null);
+    setCreating(true);
+    setCreateError(null);
     try {
-      if (editingId != null) {
-        await productService.update(editingId, { code, name });
-      } else {
-        await productService.create({ code, name });
-      }
+      await productService.create({ code: newCode, name: newName });
+      setNewCode("");
+      setNewName("");
       await refresh();
-      reset();
     } catch (err) {
-      setError((err as Error).message);
+      setCreateError((err as Error).message);
+    } finally {
+      setCreating(false);
     }
   }
 
   function onEdit(p: Product) {
-    if (p.id == null) return;
-    setEditingId(p.id);
-    setCode(p.code);
-    setName(p.name);
+    setEditing(p);
+    setEditCode(p.code ?? "");
+    setEditName(p.name ?? "");
+    setEditError(null);
+  }
+
+  async function onSave(e: React.FormEvent) {
+    e.preventDefault();
+    if (editing?.id == null) return;
+    setSaving(true);
+    setEditError(null);
+    try {
+      await productService.update(editing.id, { code: editCode, name: editName });
+      setEditing(null);
+      await refresh();
+    } catch (err) {
+      setEditError((err as Error).message);
+    } finally {
+      setSaving(false);
+    }
   }
 
   async function onDelete(p: Product) {
@@ -150,35 +177,41 @@ function ProductsPage() {
       <div className="space-y-6 max-w-5xl">
         <Card>
           <CardContent className="p-6">
-            <form onSubmit={onSubmit} className="grid gap-4 sm:grid-cols-[160px_1fr_auto] items-end">
+            <form
+              onSubmit={onCreate}
+              className="grid gap-4 sm:grid-cols-[160px_1fr_auto] items-end"
+            >
               <div className="space-y-2">
-                <Label htmlFor="code">Código</Label>
+                <Label htmlFor="new-code">Código</Label>
                 <Input
-                  id="code"
+                  id="new-code"
                   required
-                  value={code}
-                  onChange={(e) => setCode(e.target.value)}
+                  value={newCode}
+                  onChange={(e) => setNewCode(e.target.value)}
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="name">Nome</Label>
-                <Input id="name" required value={name} onChange={(e) => setName(e.target.value)} />
+                <Label htmlFor="new-name">Nome</Label>
+                <Input
+                  id="new-name"
+                  required
+                  value={newName}
+                  onChange={(e) => setNewName(e.target.value)}
+                />
               </div>
-              <div className="flex gap-2">
-                <Button type="submit">{editingId != null ? "Salvar" : "Cadastrar Produto"}</Button>
-                {editingId != null && (
-                  <Button type="button" variant="outline" onClick={reset}>
-                    Cancelar
-                  </Button>
-                )}
-              </div>
-              {error && <p className="text-sm text-destructive sm:col-span-3">{error}</p>}
+              <Button type="submit" disabled={creating}>
+                {creating ? "Cadastrando..." : "Cadastrar Produto"}
+              </Button>
+              {createError && (
+                <p className="text-sm text-destructive sm:col-span-3">{createError}</p>
+              )}
             </form>
           </CardContent>
         </Card>
 
         <Card>
           <CardContent className="p-6 space-y-4">
+            {error && <p className="text-sm text-destructive">{error}</p>}
             <div className="relative max-w-sm">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
@@ -245,12 +278,14 @@ function ProductsPage() {
                   ))}
               </TableBody>
             </Table>
-            
+
             {/* Controles de Paginação */}
             {!isSearchMode && !loading && totalElements > 0 && (
               <div className="flex items-center justify-between pt-4 border-t">
                 <div className="text-sm text-muted-foreground">
-                  Mostrando {currentPage * itemsPerPage + 1} a {Math.min((currentPage + 1) * itemsPerPage, totalElements)} de {totalElements} produtos
+                  Mostrando {currentPage * itemsPerPage + 1} a{" "}
+                  {Math.min((currentPage + 1) * itemsPerPage, totalElements)} de {totalElements}{" "}
+                  produtos
                 </div>
                 <div className="flex items-center gap-2">
                   <Button
@@ -282,6 +317,43 @@ function ProductsPage() {
           </CardContent>
         </Card>
       </div>
+
+      <Dialog open={editing !== null} onOpenChange={(open) => !open && setEditing(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Editar produto</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={onSave} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="edit-code">Código</Label>
+              <Input
+                id="edit-code"
+                value={editCode}
+                onChange={(e) => setEditCode(e.target.value)}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="edit-name">Nome</Label>
+              <Input
+                id="edit-name"
+                value={editName}
+                onChange={(e) => setEditName(e.target.value)}
+                required
+              />
+            </div>
+            {editError && <p className="text-sm text-destructive">{editError}</p>}
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setEditing(null)}>
+                Cancelar
+              </Button>
+              <Button type="submit" disabled={saving}>
+                {saving ? "Salvando..." : "Salvar"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </AppShell>
   );
 }

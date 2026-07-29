@@ -617,6 +617,24 @@
   transform-origin: top center;
 }
 
+/* A folha de pré-contagem aparece maior na tela (a impressão real não
+   muda — ver overrides em @media print). O contêiner (.precount-scale)
+   precisa reservar exatamente o tamanho equivalente à nova escala, senão
+   o conteúdo passa por cima da borda tracejada da pré-visualização. */
+.print-portrait .precount-scale {
+  width: 136.5mm; /* 65% de 210mm */
+  height: 193.05mm; /* 65% de 297mm */
+}
+
+.print-landscape .precount-scale {
+  width: 193.05mm; /* 65% de 297mm */
+  height: 136.5mm; /* 65% de 210mm */
+}
+
+.precount-scale .print-sheet {
+  transform: scale(0.65);
+}
+
 /* ==== inline editable inputs ==== */
 .s-input {
   width: 100%;
@@ -666,7 +684,7 @@
   border-style: dashed;
   border-color: #d4d4d4;
   background: #fafafa;
-  color: #555;
+  color: #000;   /* antes: #555 */
   cursor: default;
   box-shadow: none;
 }
@@ -695,6 +713,15 @@
 
 .s-code-input {
   text-align: center;
+}
+
+/* Nome do produto (descrição): já usa o peso máximo (900), mas a Arial só
+   sintetiza negrito até ~700 na maioria dos navegadores — esse leve
+   contorno reforça visualmente o traço, deixando o texto nitidamente
+   mais grosso tanto na tela quanto na impressão. */
+.s-description,
+input.s-desc-input {
+  -webkit-text-stroke: 0.6px currentColor;
 }
 
 input.s-desc-input {
@@ -850,6 +877,13 @@ input[type="date"].s-val-input {
  * com código e quantidade puxados automaticamente do(s) slote(s)
  * preenchido(s), e "Pré Contado Por" preenchido com o usuário logado.
  * Reaproveita o dimensionamento físico de .print-sheet (mesma A4).
+ *
+ * O código/quantidade usam divs em flexbox (não <table>) com altura de
+ * linha FIXA (calculada a partir do espaço real disponível na folha),
+ * porque tabelas nativas não distribuem altura extra entre <tr> de forma
+ * confiável — isso fazia o texto ficar pequeno mesmo sobrando espaço em
+ * branco na folha. Com altura de linha garantida, a fonte pode ser
+ * definida no maior tamanho que ainda cabe com folga.
  */
 .precount-content {
   flex: 1 1 auto;
@@ -860,42 +894,55 @@ input[type="date"].s-val-input {
   color: #000;
 }
 
-/* ---- vertical: tabela código/quantidade, 6 linhas ---- */
-.precount-table {
-  width: 100%;
+/* ---- vertical: 6 linhas de código/quantidade ---- */
+.precount-grid {
   flex: 1 1 auto;
-  border-collapse: collapse;
-  table-layout: fixed;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
 }
 
-.precount-table col.precount-col-codigo,
-.precount-table col.precount-col-qtd {
-  width: 50%;
+.precount-grid-header {
+  flex: 0 0 12mm;
+  display: flex;
+  border-bottom: 1px dotted #000;
 }
 
-.precount-table th {
+.precount-grid-header > div {
+  flex: 1 1 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 16pt;
   font-weight: 700;
   letter-spacing: 0.5px;
   text-transform: uppercase;
-  padding: 6px 6px 10px 6px;
-  border-bottom: 1px dotted #000;
 }
 
-.precount-table th:first-child {
+.precount-grid-header > .precount-col-codigo {
   border-right: 1px dotted #000;
 }
 
-.precount-table td {
-  font-size: 40pt;
-  font-weight: 900;
-  letter-spacing: 0.5px;
-  text-align: center;
-  padding: 6px;
+.precount-grid-row {
+  flex: 1 1 0;
+  min-height: 0;
+  display: flex;
   border-bottom: 1px dotted #000;
 }
 
-.precount-table td.precount-codigo {
+.precount-grid-row > div {
+  flex: 1 1 50%;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  font-size: 76pt;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+}
+
+.precount-codigo {
   border-right: 1px dotted #000;
 }
 
@@ -933,33 +980,35 @@ input[type="date"].s-val-input {
 }
 
 .precount-big-value {
-  flex: 1 1 auto;
+  flex: 1 1 0;
   min-height: 0;
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
   border-bottom: 1px dotted #000;
-  font-size: 84pt;
+  font-size: 128pt;
   font-weight: 900;
   letter-spacing: 1px;
 }
 
-.precount-big-qty {
-  flex: 0 0 34mm;
-  font-size: 70pt;
-}
-
 /* ---- rodapé comum (Pré Contado Por / Revisado Por) ---- */
 .precount-footer {
+  flex: 0 0 22mm;
   display: flex;
   border-top: 1px dotted #000;
-  flex: 0 0 auto;
+}
+
+.precount-landscape .precount-footer {
+  flex: 0 0 24mm;
 }
 
 .precount-signature {
   flex: 1 1 50%;
-  padding: 6px 10px;
-  min-height: 20mm;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 10px;
 }
 
 .precount-signature:first-child {
@@ -1090,16 +1139,12 @@ input[type="date"].s-val-input {
   /* Garante que o tamanho ampliado do código/quantidade da pré-contagem
      realmente saia assim na impressão, sem depender de nenhuma regra de
      tela que porventura tenha precedência. */
-  .precount-table td {
-    font-size: 40pt !important;
+  .precount-grid-row > div {
+    font-size: 76pt !important;
   }
 
   .precount-big-value {
-    font-size: 84pt !important;
-  }
-
-  .precount-big-qty {
-    font-size: 70pt !important;
+    font-size: 128pt !important;
   }
 
   .s-notfound {

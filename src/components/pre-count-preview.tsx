@@ -28,11 +28,11 @@ export function PreCountSheet({ orientation, rows, preContadoPor }: Props) {
     return (
       <div className="precount-content precount-landscape">
         <Comb />
-        <div className="precount-section-label">Código</div>
+        <div className="precount-section-label">Código Interno</div>
         <div className="precount-big-value">{row.code || "\u00A0"}</div>
         <Comb />
         <div className="precount-section-label">Quantidade</div>
-        <div className="precount-big-value precount-big-qty">{row.quantity || "\u00A0"}</div>
+        <div className="precount-big-value">{row.quantity || "\u00A0"}</div>
         <Comb />
         <div className="precount-footer">
           <div className="precount-signature">
@@ -55,26 +55,18 @@ export function PreCountSheet({ orientation, rows, preContadoPor }: Props) {
 
   return (
     <div className="precount-content">
-      <table className="precount-table">
-        <colgroup>
-          <col className="precount-col-codigo" />
-          <col className="precount-col-qtd" />
-        </colgroup>
-        <thead>
-          <tr>
-            <th>Código</th>
-            <th>Quantidade</th>
-          </tr>
-        </thead>
-        <tbody>
-          {padded.map((r, i) => (
-            <tr key={i}>
-              <td className="precount-codigo">{r.code || "\u00A0"}</td>
-              <td className="precount-qtd">{r.quantity || "\u00A0"}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <div className="precount-grid">
+        <div className="precount-grid-header">
+          <div className="precount-col-codigo">Código do Item</div>
+          <div className="precount-col-qtd">Quantidade</div>
+        </div>
+        {padded.map((r, i) => (
+          <div className="precount-grid-row" key={i}>
+            <div className="precount-codigo">{r.code || "\u00A0"}</div>
+            <div className="precount-qtd">{r.quantity || "\u00A0"}</div>
+          </div>
+        ))}
+      </div>
       <div className="precount-footer">
         <div className="precount-signature">
           <div className="precount-label">Pré Contado Por:</div>

@@ -107,19 +107,14 @@ function PrintPage() {
     setFieldErrors((errs) => errs.map((e, idx) => (idx === i ? {} : e)));
   }
 
-  // A API expõe dois endpoints (/products/code/{code} e /products/name/{name}).
-  // O campo de busca é único: se o usuário digitar exatamente 6 números,
-  // buscamos por código; qualquer outra coisa, buscamos por nome.
-  const CODE_PATTERN = /^\d{6}$/;
+  // O preenchimento é feito apenas pelo código do produto (busca por nome
+  // foi removida a pedido).
   const searchCache = useRef<Record<string, Product | null>>({});
 
-  // A busca por nome é um endpoint de "contém" e pode devolver uma lista
-  // (às vezes vazia) em vez de um produto único — mesmo com "0 resultados",
-  // uma lista vazia [] é "truthy" em JS. Sem essa normalização, o código
-  // tratava qualquer lista como "produto encontrado" e tentava usar
-  // campos que não existem em um array, corrompendo o slote com
-  // código/descrição undefined e quebrando a tela mais adiante. Aqui
-  // validamos o formato antes de confiar na resposta.
+  // A API pode, em tese, devolver formatos inesperados (ex.: uma lista em
+  // vez de um produto único). Validamos o formato antes de confiar na
+  // resposta — sem isso, um retorno inesperado corrompe o slote com
+  // código/descrição undefined e quebra a tela mais adiante.
   function normalizeProduct(raw: unknown): Product | null {
     if (!raw) return null;
     if (Array.isArray(raw)) {
@@ -141,32 +136,29 @@ function PrintPage() {
       setNotFound((n) => n.map((x, idx) => (idx === i ? false : x)));
       return;
     }
-    const byCode = CODE_PATTERN.test(v);
-    const cacheKey = `${byCode ? "code" : "name"}:${v.toLowerCase()}`;
+    const cacheKey = v.toLowerCase();
     try {
       let product = searchCache.current[cacheKey];
       if (product === undefined) {
-        const raw = byCode ? await productService.getByCode(v) : await productService.getByName(v);
+        const raw = await productService.getByCode(v);
         product = normalizeProduct(raw);
         searchCache.current[cacheKey] = product;
       }
       if (product) {
-        // Quando a busca é por nome, substituímos o texto digitado pelo
-        // código real do produto retornado pela API.
-        update(i, { description: product.name, ...(byCode ? {} : { code: product.code }) });
+        update(i, { description: product.name });
         setNotFound((n) => n.map((x, idx) => (idx === i ? false : x)));
       } else {
         update(i, { description: "" });
         setNotFound((n) => n.map((x, idx) => (idx === i ? true : x)));
-        toast.error(`Produto não encontrado para "${v}"`, {
-          description: "Confira o código (6 números) ou o nome do produto e tente novamente.",
+        toast.error(`Produto não encontrado para o código "${v}"`, {
+          description: "Confira o código digitado e tente novamente.",
         });
       }
     } catch {
       update(i, { description: "" });
       setNotFound((n) => n.map((x, idx) => (idx === i ? true : x)));
-      toast.error(`Produto não encontrado para "${v}"`, {
-        description: "Confira o código (6 números) ou o nome do produto e tente novamente.",
+      toast.error(`Produto não encontrado para o código "${v}"`, {
+        description: "Confira o código digitado e tente novamente.",
       });
     }
   }
@@ -289,9 +281,11 @@ function PrintPage() {
               </label>
             </div>
             <div className="text-xs text-muted-foreground max-w-xs">
-              Clique dentro dos campos do slote para editar. Digite o código (6 números) e descrição será preenchida automaticamente.
-              Somente as folhas com algum campo preenchido são impressas. Se marcar a pré-contagem,
-              o código e a quantidade são puxados automaticamente do slote preenchido.
+              Clique dentro dos campos do slote para editar. Digite o código do produto (6 números)
+              — a descrição é preenchida automaticamente pela busca. Somente as folhas com algum
+              campo preenchido são impressas. Se marcar a pré-contagem, o código e a quantidade são
+              puxados automaticamente do(s) slote(s) preenchido(s) e "Pré Contado Por" já sai com o
+              seu nome.
             </div>
             <div className="ml-auto flex flex-wrap gap-2">
               {isPortrait && (
@@ -382,7 +376,7 @@ function PrintPage() {
                   </span>
                 </div>
 
-                <div className="print-scale">
+                <div className="print-scale precount-scale">
                   <div className={sheetClass}>
                     <PreCountSheet
                       orientation={orientation}
