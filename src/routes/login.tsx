@@ -43,45 +43,24 @@ function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-muted/20 px-4 pb-28">
       <Card className="w-full max-w-sm">
         <CardHeader className="text-center">
-          <div className="mx-auto h-10 w-10 rounded bg-primary text-primary-foreground flex items-center justify-center mb-2">
-            <Printer className="h-5 w-5" />
+          <div className="mx-auto h-12 w-12 rounded-full bg-yellow-100 text-yellow-600 flex items-center justify-center mb-3">
+            <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
           </div>
-          <CardTitle>Entrar</CardTitle>
-          <CardDescription>Acesse com seu ID e senha</CardDescription>
+          <CardTitle className="text-xl">Sistema Indisponível</CardTitle>
+          <CardDescription className="text-base mt-2">
+            Estamos realizando manutenção no sistema.
+            <br />
+            Por favor, tente novamente mais tarde.
+          </CardDescription>
         </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {error && (
-              <Alert variant="destructive">
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
-            <div className="space-y-2">
-              <Label htmlFor="drt">Matrícula (ID ou DRT)</Label>
-              <Input
-                placeholder="Ex: 445030"
-                id="drt"
-                value={drt}
-                onChange={(e) => setDrt(e.target.value)}
-                autoComplete="username"
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Senha</Label>
-              <Input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                autoComplete="current-password"
-                required
-              />
-            </div>
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Entrando..." : "Entrar"}
-            </Button>
-          </form>
+        <CardContent className="text-center">
+          <div className="p-4 bg-muted/30 rounded-lg">
+            <p className="text-sm text-muted-foreground">
+              🕐 Previsão de retorno: em breve
+            </p>
+          </div>
         </CardContent>
       </Card>
       <AppFooter />
