@@ -622,17 +622,17 @@
    precisa reservar exatamente o tamanho equivalente à nova escala, senão
    o conteúdo passa por cima da borda tracejada da pré-visualização. */
 .print-portrait .precount-scale {
-  width: 136.5mm; /* 65% de 210mm */
-  height: 193.05mm; /* 65% de 297mm */
+  width: 105mm;   /* antes: 136.5mm (65%) */
+  height: 148.5mm; /* antes: 193.05mm (65%) */
 }
 
 .print-landscape .precount-scale {
-  width: 193.05mm; /* 65% de 297mm */
-  height: 136.5mm; /* 65% de 210mm */
+  width: 148.5mm;  /* antes: 193.05mm (65%) */
+  height: 105mm;   /* antes: 136.5mm (65%) */
 }
 
 .precount-scale .print-sheet {
-  transform: scale(0.65);
+  transform: scale(0.5); /* antes: scale(0.65) */
 }
 
 /* ==== inline editable inputs ==== */
