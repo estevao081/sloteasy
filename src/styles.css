@@ -937,7 +937,7 @@ input[type="date"].s-val-input {
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  font-size: 76pt;
+  font-size: 32pt;
   font-weight: 900;
   letter-spacing: 0.5px;
 }
