@@ -9,6 +9,21 @@ export interface User {
   role: UserRole;
 }
 
+/**
+ * Serviço de cadastro público (rota /cadastro). Diferente do userService,
+ * que é usado pela área administrativa (/admin/users) e exige autenticação,
+ * este endpoint é público e é usado por qualquer pessoa para criar sua
+ * própria conta. A role nunca é escolhida pelo usuário: é sempre "USER".
+ */
+export const registrationService = {
+  register(u: { name: string; drt: string; password: string }): Promise<User> {
+    return api<User>("/cadastro", {
+      method: "POST",
+      body: JSON.stringify({ ...u, role: "USER" as UserRole }),
+    });
+  },
+};
+
 export const userService = {
   list(): Promise<User[]> {
     return api<User[] | { content: User[] }>("/admin/users").then((res) => {

@@ -13,6 +13,7 @@ import { Route as ProductsRouteImport } from './routes/products'
 import { Route as PrintRouteImport } from './routes/print'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as CadastroRouteImport } from './routes/cadastro'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 
@@ -36,6 +37,11 @@ const DashboardRoute = DashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CadastroRoute = CadastroRouteImport.update({
+  id: '/cadastro',
+  path: '/cadastro',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -50,6 +56,7 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/cadastro': typeof CadastroRoute
   '/dashboard': typeof DashboardRoute
   '/login': typeof LoginRoute
   '/print': typeof PrintRoute
@@ -58,6 +65,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/cadastro': typeof CadastroRoute
   '/dashboard': typeof DashboardRoute
   '/login': typeof LoginRoute
   '/print': typeof PrintRoute
@@ -67,6 +75,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/cadastro': typeof CadastroRoute
   '/dashboard': typeof DashboardRoute
   '/login': typeof LoginRoute
   '/print': typeof PrintRoute
@@ -74,13 +83,28 @@ export interface FileRoutesById {
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/admin' | '/dashboard' | '/login' | '/print' | '/products'
+  fullPaths:
+    | '/'
+    | '/admin'
+    | '/cadastro'
+    | '/dashboard'
+    | '/login'
+    | '/print'
+    | '/products'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/admin' | '/dashboard' | '/login' | '/print' | '/products'
+  to:
+    | '/'
+    | '/admin'
+    | '/cadastro'
+    | '/dashboard'
+    | '/login'
+    | '/print'
+    | '/products'
   id:
     | '__root__'
     | '/'
     | '/admin'
+    | '/cadastro'
     | '/dashboard'
     | '/login'
     | '/print'
@@ -90,6 +114,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRoute
+  CadastroRoute: typeof CadastroRoute
   DashboardRoute: typeof DashboardRoute
   LoginRoute: typeof LoginRoute
   PrintRoute: typeof PrintRoute
@@ -126,6 +151,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/cadastro': {
+      id: '/cadastro'
+      path: '/cadastro'
+      fullPath: '/cadastro'
+      preLoaderRoute: typeof CadastroRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin': {
       id: '/admin'
       path: '/admin'
@@ -146,6 +178,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
+  CadastroRoute: CadastroRoute,
   DashboardRoute: DashboardRoute,
   LoginRoute: LoginRoute,
   PrintRoute: PrintRoute,
