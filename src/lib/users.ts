@@ -17,7 +17,7 @@ export interface User {
  */
 export const registrationService = {
   register(u: { name: string; drt: string; password: string }): Promise<User> {
-    return api<User>("/cadastro", {
+    return api<User>("/auth/cadastro", {
       method: "POST",
       body: JSON.stringify({ ...u, role: "USER" as UserRole }),
     });
