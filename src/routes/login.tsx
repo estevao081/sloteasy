@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Printer } from "lucide-react";
+import { Bell, Printer } from "lucide-react";
 import { authService, isAuthenticated } from "@/lib/auth";
 import { AppFooter } from "@/components/app-footer";
 
@@ -40,7 +40,7 @@ function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-muted/20 px-4 pb-28">
+    <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-muted/20 px-4 pb-28">
       <Card className="w-full max-w-sm">
         <CardHeader className="text-center">
           <div className="mx-auto h-10 w-10 rounded bg-primary text-primary-foreground flex items-center justify-center mb-2">
@@ -90,6 +90,16 @@ function LoginPage() {
           </form>
         </CardContent>
       </Card>
+
+      {/* ===== QUADRO DE NOTIFICAÇÃO =====
+          Para alterar o aviso, edite apenas o texto dentro do <span> abaixo.
+          Para ocultar o quadro, apague ou comente este bloco inteiro. */}
+      <div className="w-full max-w-sm rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-900 flex items-start gap-3">
+        <Bell className="h-4 w-4 mt-0.5 shrink-0" />
+        <span>Última atualização: Tempo de expiração de login aumentado de 5 para 15 minutos</span>
+      </div>
+      {/* ===== FIM DO QUADRO DE NOTIFICAÇÃO ===== */}
+
       <AppFooter />
     </div>
   );
