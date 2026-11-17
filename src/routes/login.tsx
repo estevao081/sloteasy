@@ -91,14 +91,13 @@ function LoginPage() {
         </CardContent>
       </Card>
 
-      {/* ===== QUADRO DE NOTIFICAÇÃO =====
-          Para alterar o aviso, edite apenas o texto dentro do <span> abaixo.
-          Para ocultar o quadro, apague ou comente este bloco inteiro. */}
       <div className="w-full max-w-sm rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-900 flex items-start gap-3">
         <Bell className="h-4 w-4 mt-0.5 shrink-0" />
-        <span>Última atualização: Tempo de expiração de login aumentado de 5 para 15 minutos</span>
+        <span>Últimas atualizações:
+          <br />-Agora suas folhas digitadas ficam salvas em cache até serem impressas.
+          <br />-Tempo de expiração de login aumentado de 5 para 15 minutos.
+        </span>
       </div>
-      {/* ===== FIM DO QUADRO DE NOTIFICAÇÃO ===== */}
 
       <AppFooter />
     </div>

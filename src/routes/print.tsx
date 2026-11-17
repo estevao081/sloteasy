@@ -10,6 +10,7 @@ import { Slote, type SloteData } from "@/components/slote-preview";
 import { PreCountSheet, type PreCountRow } from "@/components/pre-count-preview";
 import { productService, type Product } from "@/lib/products";
 import { getCurrentUser } from "@/lib/auth";
+import { clearPrintDraft, loadPrintDraft, savePrintDraft } from "@/lib/print-draft";
 import { Plus, Printer, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -168,6 +169,125 @@ function PrintPage() {
     setPortraitSlotes((s) => s.map((v) => ({ ...v, date: today })));
     setLandscapeSlotes((s) => s.map((v) => ({ ...v, date: today })));
   }, [today]);
+
+  // ---- Rascunho em cache (localStorage) ---------------------------------
+  // Tudo que o usuário digita fica salvo até a impressão, e sobrevive a
+  // troca de aba, reload e expiração de sessão. A leitura acontece só no
+  // cliente, depois da montagem (evita divergência de hidratação no SSR), e
+  // "draftLoaded" impede que o estado vazio inicial sobrescreva o rascunho
+  // antes de ele ser lido.
+  const [draftLoaded, setDraftLoaded] = useState(false);
+  const printInProgress = useRef(false);
+
+  useEffect(() => {
+    const draft = loadPrintDraft(today, responsibleName);
+    if (draft) {
+      setOrientation(draft.orientation);
+      setPortraitSlotes(draft.portraitSlotes);
+      setPortraitNotFound(draft.portraitNotFound);
+      setPortraitErrors(draft.portraitSlotes.map(() => ({})));
+      setLandscapeSlotes(draft.landscapeSlotes);
+      setLandscapeNotFound(draft.landscapeNotFound);
+      setLandscapeErrors(draft.landscapeSlotes.map(() => ({})));
+      setPrintPreCountPortrait(draft.printPreCountPortrait);
+      setPrintPreCountLandscape(draft.printPreCountLandscape);
+    }
+    setDraftLoaded(true);
+  }, [today, responsibleName]);
+
+  useEffect(() => {
+    if (!draftLoaded) return;
+    const hasContent = [...portraitSlotes, ...landscapeSlotes].some(isSloteFilled);
+    if (!hasContent) {
+      // Nada digitado: não há o que guardar.
+      clearPrintDraft();
+      return;
+    }
+    savePrintDraft({
+      orientation,
+      portraitSlotes,
+      portraitNotFound,
+      landscapeSlotes,
+      landscapeNotFound,
+      printPreCountPortrait,
+      printPreCountLandscape,
+    });
+  }, [
+    draftLoaded,
+    orientation,
+    portraitSlotes,
+    portraitNotFound,
+    landscapeSlotes,
+    landscapeNotFound,
+    printPreCountPortrait,
+    printPreCountLandscape,
+  ]);
+
+  // Depois que a impressão acontece (botão "Imprimir" ou Ctrl+P), as folhas
+  // são limpas e o rascunho apagado. O navegador dispara "afterprint" também
+  // quando o usuário cancela a janela de impressão, então a limpeza oferece
+  // "Desfazer" para ele não perder o que digitou por engano.
+  useEffect(() => {
+    const onBeforePrint = () => {
+      printInProgress.current = true;
+    };
+    const onAfterPrint = () => {
+      if (!printInProgress.current) return;
+      printInProgress.current = false;
+
+      const snapshot = {
+        portraitSlotes,
+        portraitNotFound,
+        landscapeSlotes,
+        landscapeNotFound,
+        printPreCountPortrait,
+        printPreCountLandscape,
+      };
+      if (![...portraitSlotes, ...landscapeSlotes].some(isSloteFilled)) return;
+
+      setPortraitSlotes([emptySlote(today, responsibleName), emptySlote(today, responsibleName)]);
+      setPortraitNotFound([false, false]);
+      setPortraitErrors([{}, {}]);
+      setLandscapeSlotes([emptySlote(today, responsibleName)]);
+      setLandscapeNotFound([false]);
+      setLandscapeErrors([{}]);
+      setPrintPreCountPortrait(false);
+      setPrintPreCountLandscape(false);
+      clearPrintDraft();
+
+      toast("Folhas limpas após a impressão", {
+        duration: 15000,
+        action: {
+          label: "Desfazer",
+          onClick: () => {
+            setPortraitSlotes(snapshot.portraitSlotes);
+            setPortraitNotFound(snapshot.portraitNotFound);
+            setPortraitErrors(snapshot.portraitSlotes.map(() => ({})));
+            setLandscapeSlotes(snapshot.landscapeSlotes);
+            setLandscapeNotFound(snapshot.landscapeNotFound);
+            setLandscapeErrors(snapshot.landscapeSlotes.map(() => ({})));
+            setPrintPreCountPortrait(snapshot.printPreCountPortrait);
+            setPrintPreCountLandscape(snapshot.printPreCountLandscape);
+          },
+        },
+      });
+    };
+    window.addEventListener("beforeprint", onBeforePrint);
+    window.addEventListener("afterprint", onAfterPrint);
+    return () => {
+      window.removeEventListener("beforeprint", onBeforePrint);
+      window.removeEventListener("afterprint", onAfterPrint);
+    };
+  }, [
+    today,
+    responsibleName,
+    portraitSlotes,
+    portraitNotFound,
+    landscapeSlotes,
+    landscapeNotFound,
+    printPreCountPortrait,
+    printPreCountLandscape,
+  ]);
 
   useEffect(() => {
     // Alterna dinamicamente o tamanho físico da página (@page) conforme a
